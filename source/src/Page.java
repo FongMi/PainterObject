@@ -207,10 +207,10 @@ public class Page extends JPanel {
                     shapeList.add(drawobject);
                     Page.this.add(drawobject);
                     OBJ_counter++;
+                    status = Status.Idle;
                     break;
             }
             repaint();
-            status = Status.Idle;
         }
 
         @Override
