@@ -5,16 +5,15 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
 
-class DrawObject extends JPanel implements MouseListener, MouseMotionListener {
+class DrawObject extends JPanel {
 
     Point p1, p2;
     int left, top, width, height;
@@ -25,12 +24,14 @@ class DrawObject extends JPanel implements MouseListener, MouseMotionListener {
     Shape shape;
     Status status;
 
+    Point p;
+    
     DrawObject(Shape shape, Status status) {
         this.shape = shape;
         this.status = status;
         this.setOpaque(true);
-        this.addMouseListener(this);
-        this.addMouseMotionListener(this);
+        this.addMouseListener(new myMouseAdapter());
+        this.addMouseMotionListener(new myMouseAdapter());
     }
 
     void format(Point p1, Point p2, Color color, Stroke stroke) {
@@ -81,27 +82,18 @@ class DrawObject extends JPanel implements MouseListener, MouseMotionListener {
             g2d.fill(shape);
         g2d.draw(shape);
     }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {}
-
-    @Override
-    public void mousePressed(MouseEvent e) {}
-
-    @Override
-    public void mouseReleased(MouseEvent e) {}
-
-    @Override
-    public void mouseEntered(MouseEvent e) {}
-
-    @Override
-    public void mouseExited(MouseEvent e) {}
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        this.setLocation(this.getLocation().x + e.getPoint().x, this.getLocation().y + e.getPoint().y);
+    
+    class myMouseAdapter extends MouseAdapter {
+        @Override
+        public void mousePressed(MouseEvent e) {
+            p = e.getPoint();
+        }
+        
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            int x = DrawObject.this.getX() + e.getX() - p.x;
+            int y = DrawObject.this.getY() + e.getY() - p.y;
+            DrawObject.this.setLocation(x, y);
+        }
     }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {}
 }
