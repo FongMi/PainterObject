@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -15,21 +16,19 @@ import javax.swing.JPanel;
 
 class DrawObject extends JPanel {
 
-    Point p1, p2;
-    int left, top, width, height;
+    Point p1, p2, loc, lp;
+    int width, height;
     int start, end;
     Color color;
     Stroke stroke;
     boolean isFill;
     Shape shape;
     Status status;
-
-    Point p;
     
     DrawObject(Shape shape, Status status) {
         this.shape = shape;
         this.status = status;
-        this.setOpaque(true);
+        this.setOpaque(false);
         this.addMouseListener(new myMouseAdapter());
         this.addMouseMotionListener(new myMouseAdapter());
     }
@@ -39,29 +38,29 @@ class DrawObject extends JPanel {
         this.p2 = p2;
         this.color = color;
         this.stroke = stroke;
-        this.setBounds(Math.min(p1.x,p2.x), Math.min(p1.y,p2.y), Math.abs(p2.x - p1.x), Math.abs(p2.y - p1.y));
-        shape = new Line2D.Double(0, 0, Math.abs(p2.x - p1.x), Math.abs(p2.y - p1.y));
+        /*TODO*/
+        shape = new Line2D.Double(p1, p2);
         repaint();
     }
 
-    void format(int left, int top, int width, int height, Color color, Stroke stroke, boolean isFill) {
-        this.left = left;
-        this.top = top;
+    void format(Point loc, int width, int height, Color color, int lineWidth, Stroke stroke, boolean isFill) {
+        this.loc = loc;
         this.width = width;
         this.height = height;
         this.color = color;
         this.stroke = stroke;
         this.isFill = isFill;
-        this.setBounds(left, top, width, height);
+        this.setSize(new Dimension(width + lineWidth, height + lineWidth));
+        this.setLocation(loc.x - lineWidth / 2, loc.y - lineWidth / 2);
         switch (status) {
             case Rectangle:
-                shape = new Rectangle2D.Double(0, 0, width, height);
+                shape = new Rectangle2D.Double(lineWidth/2, lineWidth/2, width, height);
                 break;
             case Round_Rectangle:
-                shape = new RoundRectangle2D.Double(0, 0, width, height, 30, 30);
+                shape = new RoundRectangle2D.Double(lineWidth/2, lineWidth/2, width, height, 30, 30);
                 break;
             case Oval:
-                shape = new Ellipse2D.Double(0, 0, width, height);
+                shape = new Ellipse2D.Double(lineWidth/2, lineWidth/2, width, height);
                 break;
         }
         repaint();
@@ -86,13 +85,13 @@ class DrawObject extends JPanel {
     class myMouseAdapter extends MouseAdapter {
         @Override
         public void mousePressed(MouseEvent e) {
-            p = e.getPoint();
+            lp = e.getPoint();
         }
         
         @Override
         public void mouseDragged(MouseEvent e) {
-            int x = DrawObject.this.getX() + e.getX() - p.x;
-            int y = DrawObject.this.getY() + e.getY() - p.y;
+            int x = DrawObject.this.getX() + e.getX() - lp.x;
+            int y = DrawObject.this.getY() + e.getY() - lp.y;
             DrawObject.this.setLocation(x, y);
         }
     }

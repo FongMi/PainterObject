@@ -228,7 +228,7 @@ public class ToolBar extends JPanel implements ActionListener {
         }
         
         if (e.getSource() == jBtn[0]) {
-            //parant.page.Undo();
+            parant.page.Undo();
         }
         
         if (e.getSource() == jBtn[1]) {

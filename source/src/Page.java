@@ -17,18 +17,19 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Page extends JPanel {
-    private Point p1, p2;
-    private int Start, lineWidth;
+    private Point p1, p2, loc;
+    private int width, height, lineWidth, OBJ_counter;
     private Color PenColor, EraserColor;
     private Stroke PenStroke;
     private Shape shape = null;
     public String string;
-    //private final ArrayList<DrawObject> shapeList = new ArrayList();
-    //private final ArrayList<DrawObject> freeList = new ArrayList();
     private boolean CtrlDown = false;
     public boolean isFill = false;
     public Status status;
     DrawObject drawobject;
+    
+    //private int Start;
+    //private final ArrayList<DrawObject> freeList = new ArrayList();
 
     Page(MainWindow parant) {
         this.setBackground(Color.WHITE);
@@ -37,6 +38,7 @@ public class Page extends JPanel {
         this.addMouseMotionListener(new myMouseAdapter());
         this.addKeyListener(new myKeyAdapter());
         lineWidth = 4;
+        OBJ_counter = -1;
         status = Status.Pen;
         string = "Ariel";
         PenStroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
@@ -52,25 +54,17 @@ public class Page extends JPanel {
             if(isFill)
                 g2d.fill(shape);
             g2d.draw(shape);
+            shape = null;
         }
     }
 
-    /*public void Undo() {
-        shape = null;
-        int f_size = freeList.size() - 1;
-        if (freeList.size() > 0 && shapeList.size() == freeList.get(f_size).end) {
-            int i = freeList.get(f_size).start;
-            int j = freeList.get(f_size).end - 1;
-            for (; j > i; j--) {
-                shapeList.remove(j);
-            }
-            freeList.remove(f_size);
-        }
-        if (shapeList.size() > 0) {
-            shapeList.remove(shapeList.size() - 1);
+    public void Undo() {
+        if (OBJ_counter > -1) {
+            this.remove(OBJ_counter);
+            OBJ_counter--;
         }
         repaint();
-    }*/
+    }
 
     public void ChooseColor() {
         Color c = JColorChooser.showDialog(this, "選擇顏色", getBackground());
@@ -101,7 +95,7 @@ public class Page extends JPanel {
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_Z && e.isControlDown()) {
-                //Undo();
+                Undo();
             }
             if (e.getKeyCode() == KeyEvent.VK_ADD && e.isControlDown() && lineWidth < 30) {
                 SetStroke(lineWidth + 1);
@@ -140,8 +134,9 @@ public class Page extends JPanel {
         @Override
         public void mouseDragged(MouseEvent e) {
             p2 = e.getPoint();
-            int width = Math.abs(p2.x - p1.x);
-            int height = Math.abs(p2.y - p1.y);
+            width = Math.abs(p2.x - p1.x);
+            height = Math.abs(p2.y - p1.y);
+            loc = new Point(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y));
             
             if (CtrlDown)
                 height = width;
@@ -161,23 +156,15 @@ public class Page extends JPanel {
                     break;
                 case Line:
                     shape = new Line2D.Double(p1.x, p1.y, p2.x, p2.y);
-                    drawobject = new DrawObject(shape, status);
-                    drawobject.format(p1, p2, PenColor, PenStroke);
                     break;
                 case Rectangle:
-                    shape = new Rectangle2D.Double(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), width, height);
-                    drawobject = new DrawObject(shape, status);
-                    drawobject.format(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), width, height, PenColor, PenStroke, isFill);
+                    shape = new Rectangle2D.Double(loc.x, loc.y, width, height);
                     break;
                 case Round_Rectangle:
-                    shape = new RoundRectangle2D.Double(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), width, height, 30, 30);
-                    drawobject = new DrawObject(shape, status);
-                    drawobject.format(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), width, height, PenColor, PenStroke, isFill);
+                    shape = new RoundRectangle2D.Double(loc.x, loc.y, width, height, 30, 30);
                     break;
                 case Oval:
-                    shape = new Ellipse2D.Double(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), width, height);
-                    drawobject = new DrawObject(shape, status);
-                    drawobject.format(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), width, height, PenColor, PenStroke, isFill);
+                    shape = new Ellipse2D.Double(loc.x, loc.y, width, height);
                     break;
             }
             repaint();
@@ -186,20 +173,24 @@ public class Page extends JPanel {
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            int x = e.getX();
-            int y = e.getY();
-            
             switch (status) {
                 case Pen:
                 case Eraser:
+                    break;
                 case Line:
+                    drawobject = new DrawObject(shape, status);
+                    drawobject.format(p1, p2, PenColor, PenStroke);
+                    break;
                 case Rectangle:
                 case Round_Rectangle:
                 case Oval:
-                    Page.this.add(drawobject);
-                    repaint();
+                    drawobject = new DrawObject(shape, status);
+                    drawobject.format(loc, width, height, PenColor, lineWidth, PenStroke, isFill);
                     break;
             }
+            Page.this.add(drawobject);
+            OBJ_counter++;
+            repaint();
         }
 
         @Override
@@ -209,8 +200,8 @@ public class Page extends JPanel {
     }
     
     public void NewPage() {
-        //shapeList.removeAll(shapeList);
-        shape = null;
+        this.removeAll();
+        OBJ_counter = -1;
         repaint();
     }
 
