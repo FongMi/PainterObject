@@ -6,22 +6,19 @@ import javax.swing.*;
 public class ToolBar extends JPanel implements ActionListener {
     
     MainWindow parant;
+    
     JToolBar[] toolBar;
     String toolBarName[] = {"畫筆", "形狀", "粗細", "調色盤", "其他"};
     
     /*畫筆按鈕*/
     JToggleButton[] pen_JTBtn;
     String penBtnName[][] = {{"Pen", "鉛筆，使用選取的線條寬度繪製任意形狀的線條"},
-                             {"Eraser", "橡皮擦，清除圖片的的一部份，並以背景色彩取代"},
-                             {"Move","移動選取的圖形"}};
+                             {"Eraser", "橡皮擦，清除圖片的的一部份，並以背景色彩取代"}};
     
     String penImage[] = {"img/pencil.png", "img/eraser.png", "img/move.png"};
     
     /*填滿按鈕*/
     JToggleButton fill_JTBtn;
-    
-    /*選取按鈕*/
-    JToggleButton select_JTBtn;
     
     /*形狀按鈕*/
     JToggleButton[] shape_JTBtn;
@@ -52,7 +49,7 @@ public class ToolBar extends JPanel implements ActionListener {
                       new Color(255,201,14), new Color(239,228,176), new Color(181,230,29), new Color(153,217,234), new Color(112,146,190), new Color(200,191,231)};
     
     ToolBar(MainWindow p) {
-        parant = p;
+        this.parant = p;
         this.setLayout(new FlowLayout(FlowLayout.LEFT));
         this.setBackground(new Color(255, 250, 240));
         

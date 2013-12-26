@@ -15,7 +15,7 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
 
 class DrawObject extends JPanel {
-    Point p1, p2, loc, lp;
+    static Point p1, p2, loc, lp;
     int width, height;
     int start, end;
     Color color;
@@ -23,13 +23,14 @@ class DrawObject extends JPanel {
     boolean isFill;
     Shape shape;
     Status status;
+    MyMouseAdapter myMouseAdapter = new MyMouseAdapter();
     
     DrawObject(Shape shape, Status status) {
         this.shape = shape;
         this.status = status;
         this.setOpaque(false);
-        this.addMouseListener(new myMouseAdapter());
-        this.addMouseMotionListener(new myMouseAdapter());
+        this.addMouseListener(myMouseAdapter);
+        this.addMouseMotionListener(myMouseAdapter);
     }
 
     void format(Point p1, Point p2, Color color, Stroke stroke) {
@@ -69,7 +70,7 @@ class DrawObject extends JPanel {
         this.start = start;
         this.end = end;
     }
-
+    
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -81,7 +82,7 @@ class DrawObject extends JPanel {
         g2d.draw(shape);
     }
     
-    class myMouseAdapter extends MouseAdapter {
+    class MyMouseAdapter extends MouseAdapter {
         @Override
         public void mousePressed(MouseEvent e) {
             lp = e.getPoint();
@@ -92,6 +93,12 @@ class DrawObject extends JPanel {
             int x = DrawObject.this.getX() + e.getX() - lp.x;
             int y = DrawObject.this.getY() + e.getY() - lp.y;
             DrawObject.this.setLocation(x, y);
+        }
+        
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            DrawObject.this.removeMouseMotionListener(myMouseAdapter);
+            DrawObject.this.removeMouseListener(myMouseAdapter);
         }
     }
 }

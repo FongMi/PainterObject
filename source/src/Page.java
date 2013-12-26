@@ -97,7 +97,7 @@ public class Page extends JPanel {
             }
         }
     }
-
+    
     public void SetStroke(int lineWidth) {
         this.lineWidth = lineWidth;
         PenStroke = new BasicStroke(this.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
@@ -210,6 +210,7 @@ public class Page extends JPanel {
                     break;
             }
             repaint();
+            status = Status.Idle;
         }
 
         @Override
