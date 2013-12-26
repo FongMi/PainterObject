@@ -219,6 +219,8 @@ public class Page extends JPanel {
     }
     
     public void NewPage() {
+        shapeList.removeAll(shapeList);
+        freeList.removeAll(freeList);
         this.removeAll();
         OBJ_counter = -1;
         repaint();
