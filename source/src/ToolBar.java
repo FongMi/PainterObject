@@ -33,11 +33,6 @@ public class ToolBar extends JPanel implements ActionListener {
     Integer[] lineWidth_px =  {2, 5, 8, 11};
     JComboBox lineWidthList;
     
-    /*字形設定*/
-    String[] strings = {"Ariel", "Myriad", "Time New Roman",
-                        "標楷體", "新細明體", "微軟正黑體"};
-    JComboBox stringList;
-
     /*功能按鈕*/
     JButton[] jBtn;
     String btnName[][] = {{"復原","復原(Ctrl+Z) 復原上次的動作"},
@@ -109,21 +104,6 @@ public class ToolBar extends JPanel implements ActionListener {
         lineWidthList.setBorder(BorderFactory.createEmptyBorder(14,9,14,9));
         lineWidthList.addActionListener(this);
         toolBar[2].add(lineWidthList);
-        
-        /*新增字形設定--暫時不加*/
-        stringList = new JComboBox();
-        for (int i = 0; i < strings.length; i++) {
-            stringList.addItem(strings[i]);
-        }
-        stringList.addActionListener(this);
-        //toolBar[3].add(stringList);
-        /*GraphicsEnvironment ge;
-        ge=GraphicsEnvironment.getLocalGraphicsEnvironment();
-        
-        String fnt[]=ge.getAvailableFontFamilyNames();
-        for(int i=220;i<fnt.length-2;i++)
-            StringList.addItem(fnt[i]);
-        */
         
         /*新增調色盤按鈕*/
         ButtonGroup color_ButtonGroup = new ButtonGroup();
@@ -221,10 +201,6 @@ public class ToolBar extends JPanel implements ActionListener {
 
         if (e.getSource() == lineWidthList) {
             parant.page.SetStroke(lineWidth_px[lineWidthList.getSelectedIndex()]);
-        }
-        
-        if (e.getSource() == stringList) {
-            parant.page.SetString(stringList.getSelectedItem().toString());
         }
         
         if (e.getSource() == jBtn[0]) {

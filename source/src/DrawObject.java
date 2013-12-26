@@ -15,7 +15,6 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
 
 class DrawObject extends JPanel {
-
     Point p1, p2, loc, lp;
     int width, height;
     int start, end;

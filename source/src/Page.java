@@ -8,6 +8,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,29 +19,27 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Page extends JPanel {
     private Point p1, p2, loc;
-    private int width, height, lineWidth, OBJ_counter;
+    private int width, height, lineWidth, OBJ_counter, Start;
     private Color PenColor, EraserColor;
     private Stroke PenStroke;
     private Shape shape = null;
-    public String string;
+    private DrawObject drawobject;
     private boolean CtrlDown = false;
     public boolean isFill = false;
     public Status status;
-    DrawObject drawobject;
     
-    //private int Start;
-    //private final ArrayList<DrawObject> freeList = new ArrayList();
-
+    private final ArrayList<DrawObject> shapeList = new ArrayList();
+    private final ArrayList<DrawObject> freeList = new ArrayList();
+    
     Page(MainWindow parant) {
         this.setBackground(Color.WHITE);
         this.setLayout(null);
         this.addMouseListener(new myMouseAdapter());
         this.addMouseMotionListener(new myMouseAdapter());
         this.addKeyListener(new myKeyAdapter());
-        lineWidth = 4;
+        lineWidth = 2;
         OBJ_counter = -1;
         status = Status.Pen;
-        string = "Ariel";
         PenStroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
     }
 
@@ -48,6 +47,13 @@ public class Page extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+        for (DrawObject temp : shapeList) {
+            if(temp.status == Status.Pen || temp.status == Status.Eraser) {
+                g2d.setStroke(temp.stroke);
+                g2d.setColor(temp.color);
+                g2d.draw(temp.shape);
+            }
+        }
         if (shape != null && status != Status.Eraser) { //畫出拖曳軌跡
             g2d.setStroke(PenStroke);
             g2d.setColor(PenColor);
@@ -59,9 +65,24 @@ public class Page extends JPanel {
     }
 
     public void Undo() {
-        if (OBJ_counter > -1) {
-            this.remove(OBJ_counter);
-            OBJ_counter--;
+        int f_size = freeList.size() - 1;
+        if (freeList.size() > 0 && shapeList.size() == freeList.get(f_size).end) {
+            int i = freeList.get(f_size).start;
+            int j = freeList.get(f_size).end - 1;
+            for (; j > i; j--) {
+                shapeList.remove(j);
+            }
+            freeList.remove(f_size);
+        }
+        if (shapeList.size() > 0) {
+            if(shapeList.get(shapeList.size() - 1).status == Status.Pen || 
+               shapeList.get(shapeList.size() - 1).status == Status.Eraser) {
+                shapeList.remove(shapeList.size() - 1);
+            } else {
+                shapeList.remove(shapeList.size() - 1);
+                this.remove(OBJ_counter);
+                OBJ_counter--;
+            }
         }
         repaint();
     }
@@ -80,14 +101,6 @@ public class Page extends JPanel {
     public void SetStroke(int lineWidth) {
         this.lineWidth = lineWidth;
         PenStroke = new BasicStroke(this.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
-        this.requestFocus();
-    }
-
-    public void SetString(String string) {
-        this.string = string;
-        /*Graphics2D g2d = (Graphics2D) this.getGraphics();
-         g2d.setFont(new Font(string, Font.PLAIN, 20));
-         g2d.drawString("哈哈哈", 100, 100);*/
         this.requestFocus();
     }
 
@@ -126,7 +139,7 @@ public class Page extends JPanel {
             switch (status) {
                 case Pen:
                 case Eraser:
-                    //Start = shapeList.size();
+                    Start = shapeList.size();
                     break;
             }
         }
@@ -146,12 +159,16 @@ public class Page extends JPanel {
                     shape = new Line2D.Double(p1.x, p1.y, p2.x, p2.y);
                     drawobject = new DrawObject(shape, status);
                     drawobject.format(p1, p2, PenColor, PenStroke);
+                    shapeList.add(drawobject);
+                    drawobject.point(Start, shapeList.size());
                     p1 = p2;
                     break;
                 case Eraser:
                     shape = new Line2D.Double(p1.x, p1.y, p2.x, p2.y);
                     drawobject = new DrawObject(shape, status);
                     drawobject.format(p1, p2, EraserColor, PenStroke);
+                    shapeList.add(drawobject);
+                    drawobject.point(Start, shapeList.size());
                     p1 = p2;
                     break;
                 case Line:
@@ -176,6 +193,7 @@ public class Page extends JPanel {
             switch (status) {
                 case Pen:
                 case Eraser:
+                    freeList.add(drawobject);
                     break;
                 case Line:
                     drawobject = new DrawObject(shape, status);
@@ -186,10 +204,11 @@ public class Page extends JPanel {
                 case Oval:
                     drawobject = new DrawObject(shape, status);
                     drawobject.format(loc, width, height, PenColor, lineWidth, PenStroke, isFill);
+                    shapeList.add(drawobject);
+                    Page.this.add(drawobject);
+                    OBJ_counter++;
                     break;
             }
-            Page.this.add(drawobject);
-            OBJ_counter++;
             repaint();
         }
 
