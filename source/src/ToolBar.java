@@ -171,7 +171,8 @@ public class ToolBar extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         for (int i = 0; i < penBtnName.length; i++) {
             if (e.getSource() == pen_JTBtn[i]) {
-                parant.page.status = Status.valueOf(penBtnName[i][0]);
+                parant.page.type = Status.valueOf(penBtnName[i][0]);
+                parant.page.status = Status.Draw;
             }
         }
         
@@ -183,7 +184,8 @@ public class ToolBar extends JPanel implements ActionListener {
 
         for (int i = 0; i < shapeBtnName.length; i++) {
             if (e.getSource() == shape_JTBtn[i]) {
-                parant.page.status = Status.valueOf(shapeBtnName[i][0]);
+                parant.page.type = Status.valueOf(shapeBtnName[i][0]);
+                parant.page.status = Status.Draw;
             }
         }
         for (int i = 0; i < colors.length; i++) {

@@ -15,24 +15,42 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
 
 class DrawObject extends JPanel {
+    /*起點、終點、圖形起點、移動起點*/
     static Point p1, p2, loc, lp;
+    /*圖形寬高*/
     int width, height;
+    /*線條起點、終點*/
     int start, end;
+    /*顏色*/
     Color color;
+    /*畫筆*/
     Stroke stroke;
+    /*填滿*/
     boolean isFill;
+    /*圖形*/
     Shape shape;
-    Status status;
+    /*畫筆型態、狀態*/
+    Status type, status;
+    /*Page*/
+    Page page;
+    /*滑鼠監聽事件*/
     MyMouseAdapter myMouseAdapter = new MyMouseAdapter();
     
-    DrawObject(Shape shape, Status status) {
+    DrawObject(Page page, Shape shape, Status type) {
+        this.page = page;
         this.shape = shape;
-        this.status = status;
-        this.setOpaque(false);
+        this.type = type;
+        this.setOpaque(false); /*變成透明*/
         this.addMouseListener(myMouseAdapter);
         this.addMouseMotionListener(myMouseAdapter);
     }
 
+    void point(int start, int end) {
+        this.start = start;
+        this.end = end;
+    }
+    
+    /*設定線條起點、終點、顏色、粗細*/
     void format(Point p1, Point p2, Color color, Stroke stroke) {
         this.p1 = p1;
         this.p2 = p2;
@@ -43,6 +61,7 @@ class DrawObject extends JPanel {
         repaint();
     }
 
+    /*設定圖形起點、寬高、顏色、粗細、填滿*/
     void format(Point loc, int width, int height, Color color, int lineWidth, Stroke stroke, boolean isFill) {
         this.loc = loc;
         this.width = width;
@@ -50,9 +69,12 @@ class DrawObject extends JPanel {
         this.color = color;
         this.stroke = stroke;
         this.isFill = isFill;
+        /*設定大小*/
         this.setSize(new Dimension(width + lineWidth, height + lineWidth));
+        /*設定位置*/
         this.setLocation(loc.x - lineWidth / 2, loc.y - lineWidth / 2);
-        switch (status) {
+        /*建立圖形*/
+        switch (type) {
             case Rectangle:
                 shape = new Rectangle2D.Double(lineWidth/2, lineWidth/2, width, height);
                 break;
@@ -66,11 +88,6 @@ class DrawObject extends JPanel {
         repaint();
     }
 
-    void point(int start, int end) {
-        this.start = start;
-        this.end = end;
-    }
-    
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -82,6 +99,7 @@ class DrawObject extends JPanel {
         g2d.draw(shape);
     }
     
+    /*滑鼠監聽事件*/
     class MyMouseAdapter extends MouseAdapter {
         @Override
         public void mousePressed(MouseEvent e) {
@@ -90,15 +108,16 @@ class DrawObject extends JPanel {
         
         @Override
         public void mouseDragged(MouseEvent e) {
+            /*計算移動中的 X Y*/
             int x = DrawObject.this.getX() + e.getX() - lp.x;
             int y = DrawObject.this.getY() + e.getY() - lp.y;
+            /*設定圖形位置*/
             DrawObject.this.setLocation(x, y);
         }
         
         @Override
         public void mouseReleased(MouseEvent e) {
-            DrawObject.this.removeMouseMotionListener(myMouseAdapter);
-            DrawObject.this.removeMouseListener(myMouseAdapter);
+            
         }
     }
 }
