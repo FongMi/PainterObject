@@ -1,5 +1,6 @@
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -15,8 +16,8 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
 
 class DrawObject extends JPanel {
+    
     /*起點、終點、圖形起點、移動起點*/
-
     static Point p1, p2, loc, lp;
     /*圖形寬高*/
     int width, height;
@@ -36,15 +37,18 @@ class DrawObject extends JPanel {
     Page page;
     /*滑鼠監聽事件*/
     MyMouseAdapter myMouseAdapter = new MyMouseAdapter();
-
+    /*選擇框*/
+    ResizeBorder rborder = new ResizeBorder(Color.RED, 10, 25);
+    
     DrawObject(Page page, Shape shape, Status type) {
         this.page = page;
         this.shape = shape;
         this.type = type;
         this.setOpaque(false); /*變成透明*/
-
         this.addMouseListener(myMouseAdapter);
         this.addMouseMotionListener(myMouseAdapter);
+        status = Status.Selected;
+        this.setBorder(rborder);
     }
 
     void point(int start, int end) {
@@ -108,11 +112,17 @@ class DrawObject extends JPanel {
         @Override
         public void mousePressed(MouseEvent e) {
             lp = e.getPoint();
-            if (status == Status.Idle) {
-                status = Status.Selected;
+            if (page.drawobject.status == Status.Selected) {
+                page.drawobject.status = Status.Idle;
+                page.drawobject.setBorder(null);
+            }
+            if (DrawObject.this.status == Status.Idle) {
+                DrawObject.this.status = Status.Selected;
+                DrawObject.this.setBorder(rborder);
+                page.drawobject = DrawObject.this;
             }
         }
-
+        
         @Override
         public void mouseDragged(MouseEvent e) {
             if (status == Status.Selected) {
@@ -125,8 +135,13 @@ class DrawObject extends JPanel {
         }
 
         @Override
-        public void mouseReleased(MouseEvent e) {
+        public void mouseEntered(MouseEvent e) {
+            DrawObject.this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+        }
 
+        @Override
+        public void mouseExited(MouseEvent e) {
+            DrawObject.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
 }

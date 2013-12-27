@@ -29,7 +29,7 @@ public class Page extends JPanel {
     /*圖形暫存*/
     private Shape shape = null;
     /*DrawObject 暫存*/
-    private DrawObject drawobject;
+    public DrawObject drawobject;
     /*Ctrl 事件*/
     private boolean CtrlDown = false;
     /*是否要填滿*/
@@ -154,17 +154,7 @@ public class Page extends JPanel {
     }
 
     /*滑鼠監聽事件*/
-    class myMouseAdapter extends MouseAdapter {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (status == Status.Idle) {
-                if (drawobject != null) {
-                    /*將 drawobject 狀態變成 Idle*/
-                    drawobject.status = Status.Idle;
-                }
-            }
-        }
-        
+    class myMouseAdapter extends MouseAdapter {       
         @Override
         public void mousePressed(MouseEvent e) {
             /*取得起點*/
@@ -173,7 +163,13 @@ public class Page extends JPanel {
             /*取得顏色*/
             PenColor = ToolBar.setcolorPanel[0].getBackground();
             EraserColor = ToolBar.setcolorPanel[1].getBackground();
-            
+
+            /*在Page上點擊將 drawobject 狀態變成 Idle*/
+            if (drawobject != null && drawobject.status == Status.Selected) {
+                drawobject.status = Status.Idle;
+                drawobject.setBorder(null);
+            }
+
             switch (type) {
                 case Pen:
                 case Eraser:
@@ -263,17 +259,15 @@ public class Page extends JPanel {
                         drawobject = new DrawObject(Page.this, shape, type);
                         /*設定起點、寬高、顏色、粗細、填滿*/
                         drawobject.format(loc, width, height, PenColor, lineWidth, PenStroke, isFill);
-                        /*設定 drawobject 狀態為選擇*/
-                        drawobject.status = Status.Selected;
                         /*加到ArrayList*/
                         shapeList.add(drawobject);
                         /*加到 Page 畫面*/
                         Page.this.add(drawobject);
                         OBJ_counter++;
-                        /*狀態 = Idle*/
                         break;
                 }
                 repaint();
+                /*狀態 = Idle*/
                 status = Status.Idle;
             }
         }
