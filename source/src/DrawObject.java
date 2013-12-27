@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 
 class DrawObject extends JPanel {
     /*起點、終點、圖形起點、移動起點*/
+
     static Point p1, p2, loc, lp;
     /*圖形寬高*/
     int width, height;
@@ -35,12 +36,13 @@ class DrawObject extends JPanel {
     Page page;
     /*滑鼠監聽事件*/
     MyMouseAdapter myMouseAdapter = new MyMouseAdapter();
-    
+
     DrawObject(Page page, Shape shape, Status type) {
         this.page = page;
         this.shape = shape;
         this.type = type;
         this.setOpaque(false); /*變成透明*/
+
         this.addMouseListener(myMouseAdapter);
         this.addMouseMotionListener(myMouseAdapter);
     }
@@ -49,7 +51,7 @@ class DrawObject extends JPanel {
         this.start = start;
         this.end = end;
     }
-    
+
     /*設定線條起點、終點、顏色、粗細*/
     void format(Point p1, Point p2, Color color, Stroke stroke) {
         this.p1 = p1;
@@ -76,13 +78,13 @@ class DrawObject extends JPanel {
         /*建立圖形*/
         switch (type) {
             case Rectangle:
-                shape = new Rectangle2D.Double(lineWidth/2, lineWidth/2, width, height);
+                shape = new Rectangle2D.Double(lineWidth / 2, lineWidth / 2, width, height);
                 break;
             case Round_Rectangle:
-                shape = new RoundRectangle2D.Double(lineWidth/2, lineWidth/2, width, height, 30, 30);
+                shape = new RoundRectangle2D.Double(lineWidth / 2, lineWidth / 2, width, height, 30, 30);
                 break;
             case Oval:
-                shape = new Ellipse2D.Double(lineWidth/2, lineWidth/2, width, height);
+                shape = new Ellipse2D.Double(lineWidth / 2, lineWidth / 2, width, height);
                 break;
         }
         repaint();
@@ -94,30 +96,37 @@ class DrawObject extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(color);
         g2d.setStroke(stroke);
-        if(isFill)
+        if (isFill) {
             g2d.fill(shape);
+        }
         g2d.draw(shape);
     }
-    
+
     /*滑鼠監聽事件*/
     class MyMouseAdapter extends MouseAdapter {
+
         @Override
         public void mousePressed(MouseEvent e) {
             lp = e.getPoint();
+            if (status == Status.Idle) {
+                status = Status.Selected;
+            }
         }
-        
+
         @Override
         public void mouseDragged(MouseEvent e) {
-            /*計算移動中的 X Y*/
-            int x = DrawObject.this.getX() + e.getX() - lp.x;
-            int y = DrawObject.this.getY() + e.getY() - lp.y;
-            /*設定圖形位置*/
-            DrawObject.this.setLocation(x, y);
+            if (status == Status.Selected) {
+                /*計算移動中的 X Y*/
+                int x = DrawObject.this.getX() + e.getX() - lp.x;
+                int y = DrawObject.this.getY() + e.getY() - lp.y;
+                /*設定圖形位置*/
+                DrawObject.this.setLocation(x, y);
+            }
         }
-        
+
         @Override
         public void mouseReleased(MouseEvent e) {
-            
+
         }
     }
 }

@@ -188,6 +188,7 @@ public class ToolBar extends JPanel implements ActionListener {
                 parant.page.status = Status.Draw;
             }
         }
+        
         for (int i = 0; i < colors.length; i++) {
             if (e.getSource() == colorsBtn[i]) {
                 if (colorJTBtn[0].isSelected()) {
