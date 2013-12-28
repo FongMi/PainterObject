@@ -65,12 +65,13 @@ class DrawObject extends JPanel {
         this.height = height;
         this.isFill = isFill;
         this.status = Status.Selected;
-        /*新增滑鼠事件*/
-        this.addMouseListener(new MyMouseAdapter());
-        this.addMouseMotionListener(new MyMouseAdapter());
-        /*設定外框*/
-        rborder = new ResizeBorder(Color.RED, 10, 25);
+        /*新增滑鼠事件、設定外框*/
+        rborder = new ResizeBorder(this, Color.RED, 10, 30);
         this.setBorder(rborder);
+        this.addMouseListener(new MyMouseAdapter());
+        this.addMouseListener(rborder);
+        this.addMouseMotionListener(new MyMouseAdapter());
+        this.addMouseMotionListener(rborder);
         /*變成透明*/
         this.setOpaque(false);
         /*設定大小*/
