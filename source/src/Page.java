@@ -60,10 +60,14 @@ public class Page extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         /*畫出線條及橡皮擦*/
         for (DrawObject temp : shapeList) {
-            if (temp.type == Status.Pen || temp.type == Status.Eraser) {
-                g2d.setStroke(temp.stroke);
-                g2d.setColor(temp.color);
-                g2d.draw(temp.shape);
+            switch (temp.type) {
+                case Pen:
+                case Eraser:
+                case Line:
+                    g2d.setStroke(temp.stroke);
+                    g2d.setColor(temp.color);
+                    g2d.draw(temp.shape);
+                    break;
             }
         }
         /*畫出拖曳軌跡*/
@@ -121,7 +125,7 @@ public class Page extends JPanel {
         PenStroke = new BasicStroke(this.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
         this.requestFocus();
     }
-
+    
     /*鍵盤監聽事件*/
     class myKeyAdapter extends KeyAdapter {
         @Override
@@ -195,51 +199,57 @@ public class Page extends JPanel {
                 height = width;
             }
             
+            /*狀態 = Drawing*/
             if (status == Status.Draw) {
-                switch (type) {
-                    case Pen:
-                        /*畫出線條*/
-                        shape = new Line2D.Double(p1.x, p1.y, p2.x, p2.y);
-                        /*建立物件*/
-                        drawobject = new DrawObject(Page.this, shape, type);
-                        /*設定起點、終點、顏色、粗細*/
-                        drawobject.format(p1, p2, PenColor, PenStroke);
-                        /*加到ArrayList*/
-                        shapeList.add(drawobject);
-                        /*設定起點終點*/
-                        drawobject.point(Start, shapeList.size());
-                        /*更新起點*/
-                        p1 = p2;
-                        break;
-                    case Eraser:
-                        shape = new Line2D.Double(p1.x, p1.y, p2.x, p2.y);
-                        drawobject = new DrawObject(Page.this, shape, type);
-                        drawobject.format(p1, p2, EraserColor, PenStroke);
-                        shapeList.add(drawobject);
-                        drawobject.point(Start, shapeList.size());
-                        p1 = p2;
-                        break;
-                    case Line:
-                        shape = new Line2D.Double(p1.x, p1.y, p2.x, p2.y);
-                        break;
-                    case Rectangle:
-                        shape = new Rectangle2D.Double(loc.x, loc.y, width, height);
-                        break;
-                    case Round_Rectangle:
-                        shape = new RoundRectangle2D.Double(loc.x, loc.y, width, height, 30, 30);
-                        break;
-                    case Oval:
-                        shape = new Ellipse2D.Double(loc.x, loc.y, width, height);
-                        break;
-                }
-                repaint();
+                status = Status.Drawing;
             }
+
+            switch (type) {
+                case Pen:
+                    /*畫出線條*/
+                    shape = new Line2D.Double(p1, p2);
+                    /*建立物件，設定粗細、顏色*/
+                    drawobject = new DrawObject(Page.this, shape, type, lineWidth, PenColor);
+                    /*設定起點、終點*/
+                    drawobject.format(p1, p2);
+                    /*加到ArrayList*/
+                    shapeList.add(drawobject);
+                    /*設定起點終點*/
+                    drawobject.point(Start, shapeList.size());
+                    /*更新起點*/
+                    p1 = p2;
+                    break;
+                case Eraser:
+                    shape = new Line2D.Double(p1, p2);
+                    drawobject = new DrawObject(Page.this, shape, type, lineWidth, EraserColor);
+                    drawobject.format(p1, p2);
+                    shapeList.add(drawobject);
+                    drawobject.point(Start, shapeList.size());
+                    p1 = p2;
+                    break;
+                case Line:
+                    shape = new Line2D.Double(p1, p2);
+                    drawobject = new DrawObject(Page.this, shape, type, lineWidth, PenColor);
+                    drawobject.format(p1, p2);
+                    break;
+                case Rectangle:
+                    shape = new Rectangle2D.Double(loc.x, loc.y, width, height);
+                    break;
+                case Round_Rectangle:
+                    shape = new RoundRectangle2D.Double(loc.x, loc.y, width, height, 30, 30);
+                    break;
+                case Oval:
+                    shape = new Ellipse2D.Double(loc.x, loc.y, width, height);
+                    break;
+            }
+            repaint();
+            
             MainWindow.statusBar.setText("滑鼠座標: (" + e.getX() + "," + e.getY() + ")");
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if (status == Status.Draw) {
+            if (status == Status.Drawing) {
                 switch (type) {
                     case Pen:
                     case Eraser:
@@ -247,18 +257,16 @@ public class Page extends JPanel {
                         freeList.add(drawobject);
                         break;
                     case Line:
-                        /*建立物件*/
-                        drawobject = new DrawObject(Page.this, shape, type);
-                        /*設定起點終點*/
-                        drawobject.format(p1, p2, PenColor, PenStroke);
+                        /*加到ArrayList*/
+                        shapeList.add(drawobject);
                         break;
                     case Rectangle:
                     case Round_Rectangle:
                     case Oval:
-                        /*建立物件*/
-                        drawobject = new DrawObject(Page.this, shape, type);
-                        /*設定起點、寬高、顏色、粗細、填滿*/
-                        drawobject.format(loc, width, height, PenColor, lineWidth, PenStroke, isFill);
+                        /*建立物件，設定粗細、顏色*/
+                        drawobject = new DrawObject(Page.this, shape, type, lineWidth, PenColor);
+                        /*設定起點、寬高、填滿*/
+                        drawobject.format(loc, width, height, isFill);
                         /*加到ArrayList*/
                         shapeList.add(drawobject);
                         /*加到 Page 畫面*/
@@ -267,8 +275,8 @@ public class Page extends JPanel {
                         break;
                 }
                 repaint();
-                /*狀態 = Idle*/
-                status = Status.Idle;
+                /*狀態 = Draw*/
+                status = Status.Draw;
             }
         }
 

@@ -1,4 +1,5 @@
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -10,7 +11,6 @@ import java.awt.Stroke;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
@@ -19,14 +19,14 @@ class DrawObject extends JPanel {
     
     /*起點、終點、圖形起點、移動起點*/
     static Point p1, p2, loc, lp;
-    /*圖形寬高*/
-    int width, height;
+    /*圖形寬高, 線條粗細*/
+    int width, height, lineWidth;
     /*線條起點、終點*/
     int start, end;
+    /*筆刷*/
+    public Stroke stroke;
     /*顏色*/
     Color color;
-    /*畫筆*/
-    Stroke stroke;
     /*填滿*/
     boolean isFill;
     /*圖形*/
@@ -36,19 +36,19 @@ class DrawObject extends JPanel {
     /*Page*/
     Page page;
     /*滑鼠監聽事件*/
-    MyMouseAdapter myMouseAdapter = new MyMouseAdapter();
+    MyMouseAdapter myMouseAdapter;
     /*選擇框*/
     ResizeBorder rborder = new ResizeBorder(Color.RED, 10, 25);
     
-    DrawObject(Page page, Shape shape, Status type) {
+    /*設定形狀、類型、粗細、顏色*/
+    DrawObject(Page page, Shape shape, Status type, int lineWidth, Color color) {
         this.page = page;
         this.shape = shape;
         this.type = type;
-        this.setOpaque(false); /*變成透明*/
-        this.addMouseListener(myMouseAdapter);
-        this.addMouseMotionListener(myMouseAdapter);
-        status = Status.Selected;
-        this.setBorder(rborder);
+        this.lineWidth = lineWidth;
+        this.color = color;
+        myMouseAdapter = new MyMouseAdapter();
+        stroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
     }
 
     void point(int start, int end) {
@@ -56,25 +56,23 @@ class DrawObject extends JPanel {
         this.end = end;
     }
 
-    /*設定線條起點、終點、顏色、粗細*/
-    void format(Point p1, Point p2, Color color, Stroke stroke) {
+    /*設定線條起點、終點*/
+    void format(Point p1, Point p2) {
         this.p1 = p1;
         this.p2 = p2;
-        this.color = color;
-        this.stroke = stroke;
-        /*TODO*/
-        shape = new Line2D.Double(p1, p2);
-        repaint();
     }
 
-    /*設定圖形起點、寬高、顏色、粗細、填滿*/
-    void format(Point loc, int width, int height, Color color, int lineWidth, Stroke stroke, boolean isFill) {
+    /*設定圖形起點、寬高、填滿*/
+    void format(Point loc, int width, int height, boolean isFill) {
         this.loc = loc;
         this.width = width;
         this.height = height;
-        this.color = color;
-        this.stroke = stroke;
         this.isFill = isFill;
+        this.setOpaque(false); /*變成透明*/
+        this.addMouseListener(myMouseAdapter);
+        this.addMouseMotionListener(myMouseAdapter);
+        this.setBorder(rborder);
+        this.status = Status.Selected;
         /*設定大小*/
         this.setSize(new Dimension(width + lineWidth, height + lineWidth));
         /*設定位置*/

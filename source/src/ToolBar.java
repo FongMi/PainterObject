@@ -16,7 +16,7 @@ public class ToolBar extends JPanel implements ActionListener {
                              {"Eraser", "橡皮擦，清除圖片的的一部份，並以背景色彩取代"}};
     
     String penImage[] = {"img/pencil.png", "img/eraser.png", "img/move.png"};
-    
+       
     /*填滿按鈕*/
     JToggleButton fill_JTBtn;
     
