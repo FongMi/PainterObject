@@ -36,8 +36,6 @@ class DrawObject extends JPanel {
     Page page;
     /*外框*/
     ResizeBorder rborder;
-    /*滑鼠監聽事件*/
-    MyMouseAdapter myMouseAdapter;
         
     /*設定形狀、類型、粗細、顏色*/
     DrawObject(Page page, Shape shape, Status type, int lineWidth, Color color) {
@@ -46,8 +44,6 @@ class DrawObject extends JPanel {
         this.type = type;
         this.lineWidth = lineWidth;
         this.color = color;
-        myMouseAdapter = new MyMouseAdapter();
-        rborder = new ResizeBorder(Color.RED, 10, 25);
         stroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
     }
 
@@ -68,11 +64,15 @@ class DrawObject extends JPanel {
         this.width = width;
         this.height = height;
         this.isFill = isFill;
-        this.setOpaque(false); /*變成透明*/
-        this.setBorder(rborder);
-        this.addMouseListener(myMouseAdapter);
-        this.addMouseMotionListener(myMouseAdapter);
         this.status = Status.Selected;
+        /*新增滑鼠事件*/
+        this.addMouseListener(new MyMouseAdapter());
+        this.addMouseMotionListener(new MyMouseAdapter());
+        /*設定外框*/
+        rborder = new ResizeBorder(Color.RED, 10, 25);
+        this.setBorder(rborder);
+        /*變成透明*/
+        this.setOpaque(false);
         /*設定大小*/
         this.setSize(new Dimension(width + lineWidth, height + lineWidth));
         /*設定位置*/
