@@ -6,7 +6,7 @@ public class ResizeBorder extends AbstractBorder {
     private final Color borderColor;
     private final int rectWidth, rectHeight;
     private final boolean selected = true;
-
+    
     public ResizeBorder(Color color, int w, int h) {
         borderColor = color;
         rectWidth = w;

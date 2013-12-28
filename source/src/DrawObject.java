@@ -16,7 +16,6 @@ import java.awt.geom.RoundRectangle2D;
 import javax.swing.JPanel;
 
 class DrawObject extends JPanel {
-    
     /*起點、終點、圖形起點、移動起點*/
     static Point p1, p2, loc, lp;
     /*圖形寬高, 線條粗細*/
@@ -24,7 +23,7 @@ class DrawObject extends JPanel {
     /*線條起點、終點*/
     int start, end;
     /*筆刷*/
-    public Stroke stroke;
+    Stroke stroke;
     /*顏色*/
     Color color;
     /*填滿*/
@@ -35,11 +34,11 @@ class DrawObject extends JPanel {
     Status type, status;
     /*Page*/
     Page page;
+    /*外框*/
+    ResizeBorder rborder;
     /*滑鼠監聽事件*/
     MyMouseAdapter myMouseAdapter;
-    /*選擇框*/
-    ResizeBorder rborder = new ResizeBorder(Color.RED, 10, 25);
-    
+        
     /*設定形狀、類型、粗細、顏色*/
     DrawObject(Page page, Shape shape, Status type, int lineWidth, Color color) {
         this.page = page;
@@ -48,6 +47,7 @@ class DrawObject extends JPanel {
         this.lineWidth = lineWidth;
         this.color = color;
         myMouseAdapter = new MyMouseAdapter();
+        rborder = new ResizeBorder(Color.RED, 10, 25);
         stroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
     }
 
@@ -62,16 +62,16 @@ class DrawObject extends JPanel {
         this.p2 = p2;
     }
 
-    /*設定圖形起點、寬高、填滿*/
+    /*設定圖形起點、寬高、填滿、外框*/
     void format(Point loc, int width, int height, boolean isFill) {
         this.loc = loc;
         this.width = width;
         this.height = height;
         this.isFill = isFill;
         this.setOpaque(false); /*變成透明*/
+        this.setBorder(rborder);
         this.addMouseListener(myMouseAdapter);
         this.addMouseMotionListener(myMouseAdapter);
-        this.setBorder(rborder);
         this.status = Status.Selected;
         /*設定大小*/
         this.setSize(new Dimension(width + lineWidth, height + lineWidth));
@@ -106,14 +106,15 @@ class DrawObject extends JPanel {
 
     /*滑鼠監聽事件*/
     class MyMouseAdapter extends MouseAdapter {
-
         @Override
         public void mousePressed(MouseEvent e) {
             lp = e.getPoint();
+            /*如果目前物件是選擇狀態，就變成 Idle*/
             if (page.drawobject.status == Status.Selected) {
                 page.drawobject.status = Status.Idle;
                 page.drawobject.setBorder(null);
             }
+            /*如果目前物件是閒置狀態，就變成 Selected*/
             if (DrawObject.this.status == Status.Idle) {
                 DrawObject.this.status = Status.Selected;
                 DrawObject.this.setBorder(rborder);
@@ -127,7 +128,7 @@ class DrawObject extends JPanel {
                 /*計算移動中的 X Y*/
                 int x = DrawObject.this.getX() + e.getX() - lp.x;
                 int y = DrawObject.this.getY() + e.getY() - lp.y;
-                /*設定圖形位置*/
+                /*重新設定圖形位置*/
                 DrawObject.this.setLocation(x, y);
             }
         }
