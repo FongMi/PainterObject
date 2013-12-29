@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import javax.swing.JPanel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +23,7 @@ public class Page extends JPanel {
     /*起始點、結束點、圖形起始點*/
     private Point p1, p2, loc;
     /*圖形寬高、線條粗細、圖形計量、線條起點*/
-    private int width, height, lineWidth, OBJ_counter, Start;
+    private int width, height, lineWidth, shape_counter, Start;
     /*畫筆顏色、橡皮擦顏色*/
     private Color PenColor, EraserColor;
     /*畫筆型式*/
@@ -30,27 +32,27 @@ public class Page extends JPanel {
     private Shape shape = null;
     /*DrawObject 暫存*/
     public DrawObject drawobject;
-    /*Ctrl 事件*/
-    private boolean CtrlDown = false;
+    /*Shift 事件*/
+    private boolean ShiftDown = false;
     /*是否要填滿*/
     public boolean isFill = false;
     /*畫筆型態、狀態*/
     public Status type, status;
     /*儲存線條及圖形*/
-    private final ArrayList<DrawObject> shapeList = new ArrayList();
+    HashMap<Integer, DrawObject> shapeList = new HashMap<>();
     /*儲存線條起點終點*/
     private final ArrayList<DrawObject> freeList = new ArrayList();
-
+   
     Page(MainWindow parant) {
         this.setBackground(Color.WHITE);
         this.setLayout(null);
         this.addMouseListener(new myMouseAdapter());
         this.addMouseMotionListener(new myMouseAdapter());
         this.addKeyListener(new myKeyAdapter());
-        lineWidth = 2; /*粗細預設=2*/
-        OBJ_counter = -1; /*圖形物件預設=-1*/
-        type = Status.Pen; /*畫筆型態預設=Pen*/
-        status = Status.Draw; /*狀態預設=Draw*/
+        lineWidth = 2; //粗細預設=2
+        shape_counter = 0; //計算圖形數量
+        type = Status.Pen; //畫筆型態預設=Pen
+        status = Status.Draw; //狀態預設=Draw
         PenStroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
     }
 
@@ -59,14 +61,15 @@ public class Page extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         /*畫出線條及橡皮擦*/
-        for (DrawObject temp : shapeList) {
-            switch (temp.type) {
+        for (Entry<Integer, DrawObject> entry : shapeList.entrySet()) {
+            DrawObject value = entry.getValue();
+            switch (value.type) {
                 case Pen:
                 case Eraser:
                 case Line:
-                    g2d.setStroke(temp.stroke);
-                    g2d.setColor(temp.color);
-                    g2d.draw(temp.shape);
+                    g2d.setStroke(value.stroke);
+                    g2d.setColor(value.color);
+                    g2d.draw(value.shape);
                     break;
             }
         }
@@ -83,30 +86,36 @@ public class Page extends JPanel {
     }
 
     public void Undo() {
-        int f_size = freeList.size() - 1;
-        if (freeList.size() > 0 && shapeList.size() == freeList.get(f_size).end) {
-            int i = freeList.get(f_size).start;
-            int j = freeList.get(f_size).end - 1;
-            for (; j > i; j--) {
-                shapeList.remove(j);
-            }
-            freeList.remove(f_size);
-        }
-        /*如果是線條或橡皮擦就移除*/
-        if (shapeList.size() > 0) {
-            if (shapeList.get(shapeList.size() - 1).type == Status.Pen
-                    || shapeList.get(shapeList.size() - 1).type == Status.Eraser) {
-                shapeList.remove(shapeList.size() - 1);
-            } else {
-                /*不是就移除物件*/
-                shapeList.remove(shapeList.size() - 1);
-                this.remove(OBJ_counter);
-                OBJ_counter--;
+        if(shape_counter > 0) {
+            switch(shapeList.get(shape_counter).type) {
+                case Pen:
+                case Eraser:
+                    int f_size = freeList.size() - 1;
+                    if (freeList.size() > 0 && shape_counter == freeList.get(f_size).end) {
+                        int start = freeList.get(f_size).start;
+                        int end = freeList.get(f_size).end;
+                        for (; end > start; end--) {
+                            shapeList.remove(end);
+                            shape_counter--;
+                        }
+                        freeList.remove(f_size);
+                    }
+                case Line:
+                    shapeList.remove(shape_counter);
+                    shape_counter--;
+                    break;
+                case Rectangle:
+                case Round_Rectangle:
+                case Oval:
+                    Page.this.remove(shapeList.get(shape_counter));
+                    shapeList.remove(shape_counter);
+                    shape_counter--;
+                    break;
             }
         }
         repaint();
     }
-
+    
     /*選擇顏色*/
     public void ChooseColor() {
         Color c = JColorChooser.showDialog(this, "選擇顏色", getBackground());
@@ -142,17 +151,24 @@ public class Page extends JPanel {
             if (e.getKeyCode() == KeyEvent.VK_SUBTRACT && e.isControlDown() && lineWidth > 0) {
                 SetStroke(lineWidth - 1);
             }
-            /*按下Ctrl*/
-            if (e.isControlDown()) {
-                CtrlDown = true;
+            /*按下Shift*/
+            if (e.isShiftDown()) {
+                ShiftDown = true;
+            }
+            /*按下Delete 刪除選取物件*/
+            if (e.getKeyCode()== KeyEvent.VK_DELETE) {
+                if (drawobject != null && drawobject.status == Status.Selected) {
+                    Page.this.remove(drawobject);
+                    repaint();
+                }
             }
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-            /*放開Ctrl*/
-            if (!e.isControlDown()) {
-                CtrlDown = false;
+            /*放開Shift*/
+            if (!e.isShiftDown()) {
+                ShiftDown = false;
             }
         }
     }
@@ -174,10 +190,11 @@ public class Page extends JPanel {
                 drawobject.setBorder(null);
             }
 
+            /*設定線條起點*/
             switch (type) {
                 case Pen:
                 case Eraser:
-                    Start = shapeList.size();
+                    Start = shape_counter + 1;
                     break;
             }
         }
@@ -194,8 +211,8 @@ public class Page extends JPanel {
             /*計算圖形起點*/
             loc = new Point(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y));
 
-            /*按下Ctrl 高=寬*/
-            if (CtrlDown) {
+            /*按下Shift 高=寬*/
+            if (ShiftDown) {
                 height = width;
             }
             
@@ -212,10 +229,11 @@ public class Page extends JPanel {
                     drawobject = new DrawObject(Page.this, shape, type, lineWidth, PenColor);
                     /*設定起點、終點*/
                     drawobject.format(p1, p2);
-                    /*加到ArrayList*/
-                    shapeList.add(drawobject);
+                    /*加到HashMap*/
+                    shape_counter++;
+                    shapeList.put(shape_counter, drawobject);
                     /*設定起點終點*/
-                    drawobject.point(Start, shapeList.size());
+                    drawobject.point(Start, shape_counter);
                     /*更新起點*/
                     p1 = p2;
                     break;
@@ -223,8 +241,9 @@ public class Page extends JPanel {
                     shape = new Line2D.Double(p1, p2);
                     drawobject = new DrawObject(Page.this, shape, type, lineWidth, EraserColor);
                     drawobject.format(p1, p2);
-                    shapeList.add(drawobject);
-                    drawobject.point(Start, shapeList.size());
+                    shape_counter++;
+                    shapeList.put(shape_counter, drawobject);
+                    drawobject.point(Start, shape_counter);
                     p1 = p2;
                     break;
                 case Line:
@@ -257,8 +276,9 @@ public class Page extends JPanel {
                         freeList.add(drawobject);
                         break;
                     case Line:
-                        /*加到ArrayList*/
-                        shapeList.add(drawobject);
+                        /*加到HashMap*/
+                        shape_counter++;
+                        shapeList.put(shape_counter, drawobject);
                         break;
                     case Rectangle:
                     case Round_Rectangle:
@@ -267,11 +287,11 @@ public class Page extends JPanel {
                         drawobject = new DrawObject(Page.this, shape, type, lineWidth, PenColor);
                         /*設定起點、寬高、填滿*/
                         drawobject.format(loc, width, height, isFill);
-                        /*加到ArrayList*/
-                        shapeList.add(drawobject);
+                        /*加到HashMap*/
+                        shape_counter++;
+                        shapeList.put(shape_counter, drawobject);
                         /*加到 Page 畫面*/
                         Page.this.add(drawobject);
-                        OBJ_counter++;
                         break;
                 }
                 repaint();
@@ -288,12 +308,13 @@ public class Page extends JPanel {
 
     /*清除畫面*/
     public void NewPage() {
-        /*移除所有ArrayList*/
-        shapeList.removeAll(shapeList);
+        /*清空 shapeList*/
+        shapeList.clear();
+        /*清空 freeList*/
         freeList.removeAll(freeList);
-        /*移除所有圖形*/
+        /*清空畫面*/
         this.removeAll();
-        OBJ_counter = -1;
+        shape_counter = 0;
         repaint();
     }
 
