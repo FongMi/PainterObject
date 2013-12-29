@@ -33,16 +33,16 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
             } else {
                 g2d.setColor(borderColor);
             }
-            //左上角
+            //西北
             g2d.fillRect(x, y, rectWidth, rectHeight);
             g2d.fillRect(x, y, rectHeight, rectWidth);
-            //右上角
+            //東北
             g2d.fillRect(width - rectWidth, y, rectWidth, rectHeight);
             g2d.fillRect(width - rectHeight, y, rectHeight, rectWidth);
-            //左下角
+            //西南
             g2d.fillRect(x, height - rectHeight, rectWidth, rectHeight);
             g2d.fillRect(x, height - rectWidth, rectHeight, rectWidth);
-            //右下角
+            //東南
             g2d.fillRect(width - rectWidth, height - rectHeight, rectWidth, rectHeight);
             g2d.fillRect(width - rectHeight, height - rectWidth, rectHeight, rectWidth);
             //東
@@ -70,22 +70,21 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
         return -1;
     }
     
-    void reShape(DrawObject drawObject, int x, int y) {
-        if (x == 0) {
-            p.x = 0;
-        }
-        if (y == 0) {
-            p.y = 0;
-        }
+    void reShape(DrawObject drawObject, int a, int b, int x, int y) {
+        Point loc = new Point(0, 0);
+        loc.x += a + (drawObject.lineWidth / 2);
+        loc.y += b + (drawObject.lineWidth / 2);
+        int width = drawObject.width += x;
+        int height = drawObject.height += y;
         switch (drawObject.type) {
             case Rectangle:
-                drawObject.shape = new Rectangle2D.Double(drawObject.lineWidth / 2, drawObject.lineWidth / 2, drawObject.width += (x - p.x), drawObject.height += (y - p.y));
+                drawObject.shape = new Rectangle2D.Double(loc.x, loc.y, width, height);
                 break;
             case Round_Rectangle:
-                drawObject.shape = new RoundRectangle2D.Double(drawObject.lineWidth / 2, drawObject.lineWidth / 2, drawObject.width += (x - p.x), drawObject.height += (y - p.y), 30, 30);
+                drawObject.shape = new RoundRectangle2D.Double(loc.x, loc.y, width, height, 30, 30);
                 break;
             case Oval:
-                drawObject.shape = new Ellipse2D.Double(drawObject.lineWidth / 2, drawObject.lineWidth / 2, drawObject.width += (x - p.x), drawObject.height += (y - p.y));
+                drawObject.shape = new Ellipse2D.Double(loc.x, loc.y, width, height);
                 break;
         }
     }
@@ -95,16 +94,16 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
     public void mouseMoved(MouseEvent e) {
         if (drawObject.status == Status.Selected) {
             switch (inCorner(e)) {
-                case 0: //左上角
+                case 0: //西北
                     drawObject.setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
                     break;
-                case 1: //右上角
+                case 1: //東北
                     drawObject.setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
                     break;
-                case 2: //左下角
+                case 2: //西南
                     drawObject.setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
                     break;
-                case 3: //右下角
+                case 3: //東南
                     drawObject.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
                     break;
                 case 4: //東
@@ -135,24 +134,32 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
         /*開始 Resize*/
         if (drawObject.status == Status.Resize) {
             Point newP = SwingUtilities.convertPoint(drawObject, e.getPoint(), drawObject.getParent());
+            int offset_x = newP.x - p.x;
+            int offset_y = newP.y - p.y;
             switch (nowCorner) {
-                case 0:
+                case 0: //西北
+                    drawObject.setBounds(drawObject.getX() + offset_x, drawObject.getY() + offset_y, drawObject.getWidth() - offset_x, drawObject.getHeight() - offset_y);
+                    this.reShape(drawObject, offset_x, offset_y, -offset_x, -offset_y);
                     break;
-                case 1:
+                case 1: //東北
+                    drawObject.setBounds(drawObject.getX(), drawObject.getY() + offset_y, drawObject.getWidth() + offset_x, drawObject.getHeight() - offset_y);
+                    this.reShape(drawObject, 0, offset_y, offset_x, -offset_y);
                     break;
-                case 2:
+                case 2: //西南
+                    drawObject.setBounds(drawObject.getX() + offset_x, drawObject.getY(), drawObject.getWidth() - offset_x, drawObject.getHeight() + offset_y);
+                    this.reShape(drawObject, offset_x, 0, -offset_x, offset_y);
                     break;
-                case 3:
-                    drawObject.setBounds(drawObject.getX(), drawObject.getY(), drawObject.getWidth() + (newP.x - p.x), drawObject.getHeight() + (newP.y - p.y));
-                    this.reShape(drawObject, newP.x, newP.y);
+                case 3: //東南
+                    drawObject.setBounds(drawObject.getX(), drawObject.getY(), drawObject.getWidth() + offset_x, drawObject.getHeight() + offset_y);
+                    this.reShape(drawObject, 0, 0, offset_x, offset_y);
                     break;
-                case 4:
-                    drawObject.setBounds(drawObject.getX(), drawObject.getY(), drawObject.getWidth() + (newP.x - p.x), drawObject.getHeight());
-                    this.reShape(drawObject, newP.x, 0);
+                case 4: //東
+                    drawObject.setBounds(drawObject.getX(), drawObject.getY(), drawObject.getWidth() + offset_x, drawObject.getHeight());
+                    this.reShape(drawObject, 0, 0, offset_x, 0);
                     break;
-                case 5:
-                    drawObject.setBounds(drawObject.getX(), drawObject.getY(), drawObject.getWidth(), drawObject.getHeight() + (newP.y - p.y));
-                    this.reShape(drawObject, 0, newP.y);
+                case 5: //南
+                    drawObject.setBounds(drawObject.getX(), drawObject.getY(), drawObject.getWidth(), drawObject.getHeight() + offset_y);
+                    this.reShape(drawObject, 0, 0, 0, offset_y);
                     break;
             }
             p = newP;
