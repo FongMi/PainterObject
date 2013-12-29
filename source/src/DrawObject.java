@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 
 class DrawObject extends JPanel {
     /*起點、終點、圖形起點、移動起點*/
-    static Point p1, p2, loc, lp;
+    Point p1, p2, loc, lp;
     /*圖形寬高, 線條粗細*/
     int width, height, lineWidth;
     /*線條起點、終點*/
@@ -66,7 +66,7 @@ class DrawObject extends JPanel {
         this.isFill = isFill;
         this.status = Status.Selected;
         /*新增滑鼠事件、設定外框*/
-        rborder = new ResizeBorder(this, Color.RED, 10, 30);
+        rborder = new ResizeBorder(this, Color.RED, 5, 15);
         this.setBorder(rborder);
         this.addMouseListener(new MyMouseAdapter());
         this.addMouseListener(rborder);
