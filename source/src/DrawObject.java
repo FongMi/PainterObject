@@ -121,6 +121,7 @@ class DrawObject extends JPanel {
                 DrawObject.this.setBorder(rborder);
                 page.drawobject = DrawObject.this;
             }
+            page.repaint();
         }
         
         @Override
@@ -131,6 +132,7 @@ class DrawObject extends JPanel {
                 int y = DrawObject.this.getY() + e.getY() - lp.y;
                 /*重新設定圖形位置*/
                 DrawObject.this.setLocation(x, y);
+                page.repaint();
             }
         }
 

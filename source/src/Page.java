@@ -148,7 +148,7 @@ public class Page extends JPanel {
                 SetStroke(lineWidth + 1);
             }
             /*Ctrl + - 變細*/
-            if (e.getKeyCode() == KeyEvent.VK_SUBTRACT && e.isControlDown() && lineWidth > 0) {
+            if (e.getKeyCode() == KeyEvent.VK_SUBTRACT && e.isControlDown() && lineWidth > 2) {
                 SetStroke(lineWidth - 1);
             }
             /*按下Shift*/
@@ -211,9 +211,9 @@ public class Page extends JPanel {
             /*計算圖形起點*/
             loc = new Point(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y));
 
-            /*按下Shift 高=寬*/
+            /*按下Shift 寬=高*/
             if (ShiftDown) {
-                height = width;
+                width = height;
             }
             
             /*狀態 = Drawing*/
