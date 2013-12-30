@@ -46,7 +46,8 @@ class DrawObject extends JPanel {
         this.color = color;
         stroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
     }
-
+    
+    /*設定線條區段*/
     void point(int start, int end) {
         this.start = start;
         this.end = end;
@@ -128,10 +129,10 @@ class DrawObject extends JPanel {
         public void mouseDragged(MouseEvent e) {
             if (status == Status.Selected) {
                 /*計算移動中的 X Y*/
-                int x = DrawObject.this.getX() + e.getX() - lp.x;
-                int y = DrawObject.this.getY() + e.getY() - lp.y;
+                int offset_x = DrawObject.this.getX() + e.getX() - lp.x;
+                int offset_y = DrawObject.this.getY() + e.getY() - lp.y;
                 /*重新設定圖形位置*/
-                DrawObject.this.setLocation(x, y);
+                DrawObject.this.setLocation(offset_x, offset_y);
                 page.repaint();
             }
         }

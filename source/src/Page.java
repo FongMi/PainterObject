@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Page extends JPanel {
     /*起始點、結束點、圖形起始點*/
@@ -31,13 +30,13 @@ public class Page extends JPanel {
     /*圖形暫存*/
     private Shape shape = null;
     /*DrawObject 暫存*/
-    public DrawObject drawobject;
+    DrawObject drawobject;
     /*Shift 事件*/
     private boolean ShiftDown = false;
     /*是否要填滿*/
     public boolean isFill = false;
     /*畫筆型態、狀態*/
-    public Status type, status;
+    Status type, status;
     /*儲存線條及圖形*/
     HashMap<Integer, DrawObject> shapeList = new HashMap<>();
     /*儲存線條起點終點*/
@@ -319,7 +318,7 @@ public class Page extends JPanel {
     }
 
     /*開啟檔案*/
-    public void Open() {
+    /*public void Open() {
         JFileChooser Open_JC = new JFileChooser();
         Open_JC.setFileSelectionMode(JFileChooser.FILES_ONLY);
         Open_JC.setDialogTitle("開啟檔案");
@@ -328,13 +327,13 @@ public class Page extends JPanel {
         int result = Open_JC.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = Open_JC.getSelectedFile();
-            //try {
-            //    image = ImageIO.read(new File(file.getAbsolutePath()));
-            //    repaint();
-            //} catch (IOException e) {
-            //}
+            try {
+                image = ImageIO.read(new File(file.getAbsolutePath()));
+                repaint();
+            } catch (IOException e) {
+            }
         }
-    }
+    }*/
 
     /*儲存檔案*/
     public void Save() {
