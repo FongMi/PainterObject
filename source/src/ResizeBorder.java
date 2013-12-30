@@ -15,11 +15,11 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
     Point[] corner;
     Point p = new Point(0, 0);
     
-    ResizeBorder(DrawObject drawObject, Color color, int w, int h) {
+    ResizeBorder(DrawObject drawObject, Color color) {
         this.drawObject = drawObject;
         borderColor = color;
-        rectWidth = w;
-        rectHeight = h;
+        rectWidth = 5;
+        rectHeight = 15;
     }
 
     @Override
@@ -168,6 +168,7 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
             Point newP = SwingUtilities.convertPoint(drawObject, e.getPoint(), drawObject.getParent());
             int offset_x = newP.x - p.x;
             int offset_y = newP.y - p.y;
+            
             switch (nowCorner) {
                 case 0: //西北
                     drawObject.setBounds(drawObject.getX() + offset_x, drawObject.getY() + offset_y, drawObject.getWidth() - offset_x, drawObject.getHeight() - offset_y);

@@ -67,7 +67,7 @@ class DrawObject extends JPanel {
         this.isFill = isFill;
         this.status = Status.Selected;
         /*新增滑鼠事件、設定外框*/
-        rborder = new ResizeBorder(this, Color.RED, 5, 15);
+        rborder = new ResizeBorder(this, Color.RED);
         this.setBorder(rborder);
         this.addMouseListener(new MyMouseAdapter());
         this.addMouseListener(rborder);
@@ -139,12 +139,16 @@ class DrawObject extends JPanel {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            DrawObject.this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            if(DrawObject.this.status != Status.Resize) {
+                DrawObject.this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+            }
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            DrawObject.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            if(DrawObject.this.status != Status.Resize) {
+                DrawObject.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
         }
     }
 }
