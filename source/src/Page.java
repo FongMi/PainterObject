@@ -182,11 +182,10 @@ public class Page extends JPanel {
             /*取得顏色*/
             PenColor = ToolBar.setcolorPanel[0].getBackground();
             EraserColor = ToolBar.setcolorPanel[1].getBackground();
-
             /*在Page上點擊將 drawobject 狀態變成 Idle*/
             if (drawobject != null && drawobject.status == Status.Selected) {
                 drawobject.status = Status.Idle;
-                drawobject.setBorder(null);
+                drawobject.repaint();
             }
 
             /*設定線條起點*/

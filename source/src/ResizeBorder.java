@@ -28,39 +28,41 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
         /*畫角落及邊框*/
         if (g instanceof Graphics2D) {
             Graphics2D g2d = (Graphics2D) g;
-            if (drawObject.status == Status.Resize) {
-                g2d.setColor(Color.BLUE);
-            } else {
-                g2d.setColor(borderColor);
+            if (drawObject.status == Status.Selected || drawObject.status == Status.Resize) {
+                if (drawObject.status == Status.Resize) {
+                    g2d.setColor(Color.BLUE);
+                } else {
+                    g2d.setColor(borderColor);
+                }
+                //西北
+                g2d.fillRect(x, y, rectWidth, rectHeight);
+                g2d.fillRect(x, y, rectHeight, rectWidth);
+                //東北
+                g2d.fillRect(width - rectWidth, y, rectWidth, rectHeight);
+                g2d.fillRect(width - rectHeight, y, rectHeight, rectWidth);
+                //西南
+                g2d.fillRect(x, height - rectHeight, rectWidth, rectHeight);
+                g2d.fillRect(x, height - rectWidth, rectHeight, rectWidth);
+                //東南
+                g2d.fillRect(width - rectWidth, height - rectHeight, rectWidth, rectHeight);
+                g2d.fillRect(width - rectHeight, height - rectWidth, rectHeight, rectWidth);
+                //東
+                g2d.fillRect(width - rectWidth, (height - rectHeight / 2) / 2, rectWidth, rectHeight / 2);
+                //南
+                g2d.fillRect((width - rectHeight / 2 + x) / 2, height - rectWidth, rectHeight / 2, rectWidth);
+                //西
+                g2d.fillRect(x / 2, (height - rectHeight / 2) / 2, rectWidth, rectHeight / 2);
+                //北
+                g2d.fillRect((width - rectHeight / 2 + x) / 2, y, rectHeight / 2, rectWidth);
+                //邊框
+                g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
+                g2d.drawRect(x, y, width, height);
+                /*儲存每個點*/
+                Point[] corner = {new Point(0, 0), new Point(width, 0), new Point(0, height), new Point(width, height),
+                    new Point(width, height / 2), new Point(width / 2, height), new Point(0, height / 2), new Point(width / 2, 0)};
+                this.corner = corner;
             }
-            //西北
-            g2d.fillRect(x, y, rectWidth, rectHeight);
-            g2d.fillRect(x, y, rectHeight, rectWidth);
-            //東北
-            g2d.fillRect(width - rectWidth, y, rectWidth, rectHeight);
-            g2d.fillRect(width - rectHeight, y, rectHeight, rectWidth);
-            //西南
-            g2d.fillRect(x, height - rectHeight, rectWidth, rectHeight);
-            g2d.fillRect(x, height - rectWidth, rectHeight, rectWidth);
-            //東南
-            g2d.fillRect(width - rectWidth, height - rectHeight, rectWidth, rectHeight);
-            g2d.fillRect(width - rectHeight, height - rectWidth, rectHeight, rectWidth);
-            //東
-            g2d.fillRect(width - rectWidth, (height - rectHeight / 2) / 2, rectWidth, rectHeight / 2);
-            //南
-            g2d.fillRect((width - rectHeight / 2 + x) / 2, height - rectWidth, rectHeight / 2, rectWidth);
-            //西
-            g2d.fillRect(x / 2, (height - rectHeight / 2) / 2, rectWidth, rectHeight / 2);
-            //北
-            g2d.fillRect((width - rectHeight / 2 + x) / 2, y, rectHeight / 2, rectWidth);
-            //邊框
-            g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
-            g2d.drawRect(x, y, width, height);
         }
-        /*儲存每個點*/
-        Point[] corner = {new Point(0, 0), new Point(width, 0), new Point(0, height), new Point(width, height),
-                          new Point(width, height / 2), new Point(width / 2, height), new Point(0, height / 2), new Point(width / 2, 0)};
-        this.corner = corner;
     }
 
     /*傳回哪個角落*/

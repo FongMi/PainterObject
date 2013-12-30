@@ -114,12 +114,10 @@ class DrawObject extends JPanel {
             /*如果目前物件是選擇狀態，就變成 Idle*/
             if (page.drawobject.status == Status.Selected) {
                 page.drawobject.status = Status.Idle;
-                page.drawobject.setBorder(null);
             }
             /*如果目前物件是閒置狀態，就變成 Selected*/
             if (DrawObject.this.status == Status.Idle) {
                 DrawObject.this.status = Status.Selected;
-                DrawObject.this.setBorder(rborder);
                 page.drawobject = DrawObject.this;
             }
             page.repaint();
