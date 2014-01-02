@@ -2,19 +2,18 @@
 import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
+import java.awt.geom.*;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputListener;
 
 public class ResizeBorder extends AbstractBorder implements MouseInputListener {
+
     Color borderColor;
     int rectWidth, rectHeight, nowCorner;
     DrawObject drawobject;
     Point[] corner;
     Point p = new Point(0, 0);
-    
+
     ResizeBorder(DrawObject drawobject, Color color) {
         this.drawobject = drawobject;
         borderColor = color;
@@ -77,19 +76,19 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
         }
         /*東南西北*/
         for (int i = 4; i < corner.length; i++) {
-            if (Math.pow(pt.x - corner[i].x, 2) + Math.pow(pt.y - corner[i].y, 2) < rectHeight/2 * rectHeight/2) {
+            if (Math.pow(pt.x - corner[i].x, 2) + Math.pow(pt.y - corner[i].y, 2) < rectHeight / 2 * rectHeight / 2) {
                 return i;
             }
         }
         return -1;
     }
-    
+
     void reShape(DrawObject drawobject, int a, int b, int x, int y) {
         Point loc = new Point(0, 0);
-        
+
         loc.x += a + (drawobject.lineWidth / 2);
         loc.y += b + (drawobject.lineWidth / 2);
-        
+
         if (a != 0 && b != 0) {
             loc.x = (drawobject.lineWidth / 2);
             loc.y = (drawobject.lineWidth / 2);
@@ -100,10 +99,10 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
         if (b == 0) {
             loc.x = (drawobject.lineWidth / 2);
         }
-        
+
         int width = drawobject.width += x;
         int height = drawobject.height += y;
-        
+
         switch (drawobject.type) {
             case Rectangle:
                 drawobject.shape = new Rectangle2D.Double(loc.x, loc.y, width, height);
@@ -116,7 +115,7 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
                 break;
         }
     }
-    
+
     /*設定移動游標*/
     @Override
     public void mouseMoved(MouseEvent e) {
@@ -170,7 +169,7 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
             Point newP = SwingUtilities.convertPoint(drawobject, e.getPoint(), drawobject.getParent());
             int offset_x = newP.x - p.x;
             int offset_y = newP.y - p.y;
-            
+
             switch (nowCorner) {
                 case 0: //西北
                     drawobject.setBounds(drawobject.getX() + offset_x, drawobject.getY() + offset_y, drawobject.getWidth() - offset_x, drawobject.getHeight() - offset_y);
@@ -208,7 +207,7 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
             p = newP;
         }
     }
-    
+
     @Override
     public void mouseReleased(MouseEvent e) {
         /* Resize 完狀態 = Selected*/
@@ -220,9 +219,10 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {}
+
     @Override
     public void mouseEntered(MouseEvent e) {}
+
     @Override
     public void mouseExited(MouseEvent e) {}
-    
 }

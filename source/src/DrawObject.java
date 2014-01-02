@@ -1,17 +1,8 @@
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
+import java.awt.geom.*;
 import javax.swing.JPanel;
 
 class DrawObject extends JPanel {
@@ -47,7 +38,7 @@ class DrawObject extends JPanel {
     }
     
     /*設定線條區段*/
-    void point(int start, int end) {
+    void setSection(int start, int end) {
         this.start = start;
         this.end = end;
     }
@@ -136,14 +127,14 @@ class DrawObject extends JPanel {
 
         @Override
         public void mouseEntered(MouseEvent e) {
-            if(DrawObject.this.status != Status.Resize) {
+            if (DrawObject.this.status != Status.Resize) {
                 DrawObject.this.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
             }
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            if(DrawObject.this.status != Status.Resize) {
+            if (DrawObject.this.status != Status.Resize) {
                 DrawObject.this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
         }
