@@ -5,16 +5,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 
-public class MenuBar extends JPanel implements ActionListener{
-    
+public class MenuBar extends JPanel implements ActionListener {
+
     MainWindow parant;
     JMenuBar jMenuBar;
     JMenu jMenu;
     JMenuItem jMenuItem[];
     String menuItem[] = {"清除畫面", "儲存檔案", "結束"};
-    
-    MenuBar(MainWindow p) {
-        parant = p;
+
+    MenuBar(MainWindow parant) {
+        parant = parant;
         this.setBackground(Color.WHITE);
         this.setLayout(new BorderLayout());
         jMenuBar = new JMenuBar();
@@ -26,9 +26,9 @@ public class MenuBar extends JPanel implements ActionListener{
             jMenu.add(jMenuItem[i]);
         }
         jMenuBar.add(jMenu);
-        this.add(jMenuBar ,BorderLayout.NORTH);
+        this.add(jMenuBar, BorderLayout.NORTH);
     }
-    
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jMenuItem[0]) {

@@ -4,9 +4,10 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class ToolBar extends JPanel implements ActionListener {
-    
+    /*MainWindow*/
     MainWindow parant;
     
+    /*ToolBar*/
     JToolBar[] toolBar;
     String toolBarName[] = {"畫筆", "形狀", "粗細", "調色盤", "其他"};
     
@@ -14,7 +15,6 @@ public class ToolBar extends JPanel implements ActionListener {
     JToggleButton[] pen_JTBtn;
     String penBtnName[][] = {{"Pen", "鉛筆，使用選取的線條寬度繪製任意形狀的線條"},
                              {"Eraser", "橡皮擦，清除圖片的的一部份，並以背景色彩取代"}};
-    
     String penImage[] = {"img/pencil.png", "img/eraser.png", "img/move.png"};
        
     /*填滿按鈕*/
@@ -34,22 +34,20 @@ public class ToolBar extends JPanel implements ActionListener {
     JButton[] jBtn;
     String btnName[][] = {{"復原","復原(Ctrl+Z) 復原上次的動作"},
                           {"顏色","編輯色彩，從調色盤選取色彩"}};
-    
     String btnImage[] = {"img/undo.png", "img/color.png"};
 
     /*調色盤按鈕*/
-    static JToggleButton[] colorJTBtn;
-    static JPanel setcolorPanel[],selectColorPanel[];
-    static JButton[] colorsBtn;
+    JToggleButton[] colorJTBtn;
+    JPanel setcolorPanel[],selectColorPanel[];
+    JButton[] colorsBtn;
     String colorToolTip[] = {"色彩1(前景色彩)，按一下此處，然後從調色盤選取色彩，鉛筆圖形都會使用此色彩",
                              "色彩2(背景色彩)，按一下此處，然後從調色盤選取色彩，橡皮擦會使用此色彩"};
-    
     Color colors[] = {new Color(0,0,0), new Color(255,255,255), new Color(136,0,21), new Color(237,28,36), new Color(255,127,39), new Color(255,242,0), new Color(34,177,76),
                       new Color(0,162,232), new Color(63,72,204), new Color(163,73,164), new Color(127,127,127), new Color(195,195,195), new Color(185,122,87), new Color(255,174,201),
                       new Color(255,201,14), new Color(239,228,176), new Color(181,230,29), new Color(153,217,234), new Color(112,146,190), new Color(200,191,231)};
     
-    ToolBar(MainWindow p) {
-        this.parant = p;
+    ToolBar(MainWindow parant) {
+        this.parant = parant;
         this.setLayout(new FlowLayout(FlowLayout.LEFT));
         this.setBackground(new Color(255, 250, 240));
         
@@ -200,7 +198,7 @@ public class ToolBar extends JPanel implements ActionListener {
         }
 
         if (e.getSource() == lineWidthList) {
-            parant.page.SetStroke(lineWidth_px[lineWidthList.getSelectedIndex()]);
+            parant.page.SetLineWidth(lineWidth_px[lineWidthList.getSelectedIndex()]);
         }
         
         if (e.getSource() == jBtn[0]) {

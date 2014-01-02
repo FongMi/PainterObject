@@ -14,6 +14,8 @@ import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 
 public class Page extends JPanel {
+    /*MainWindow*/
+    MainWindow parant;
     /*起始點、結束點、圖形起始點*/
     private Point p1, p2, loc;
     /*圖形寬高、圖形計量、線條起點*/
@@ -29,7 +31,7 @@ public class Page extends JPanel {
     /*DrawObject 暫存*/
     DrawObject drawobject;
     /*Shift 事件*/
-    private boolean isShiftDown = false;
+    private boolean ShiftDown = false;
     /*是否要填滿*/
     public boolean isFill = false;
     /*畫筆型態、狀態*/
@@ -40,6 +42,7 @@ public class Page extends JPanel {
     private final ArrayList<DrawObject> freeList = new ArrayList();
    
     Page(MainWindow parant) {
+        this.parant = parant;
         this.setBackground(Color.WHITE);
         this.setLayout(null);
         this.addMouseListener(new myMouseAdapter());
@@ -120,16 +123,16 @@ public class Page extends JPanel {
     public void ChooseColor() {
         Color c = JColorChooser.showDialog(this, "選擇顏色", getBackground());
         if (c != null) {
-            if (ToolBar.colorJTBtn[0].isSelected()) {
-                ToolBar.setcolorPanel[0].setBackground(c);
-            } else if (ToolBar.colorJTBtn[1].isSelected()) {
-                ToolBar.setcolorPanel[1].setBackground(c);
+            if (parant.toolBar.colorJTBtn[0].isSelected()) {
+                parant.toolBar.setcolorPanel[0].setBackground(c);
+            } else if (parant.toolBar.colorJTBtn[1].isSelected()) {
+                parant.toolBar.setcolorPanel[1].setBackground(c);
             }
         }
     }
 
-    /*設定筆刷粗細*/
-    public void SetStroke(int lineWidth) {
+    /*設定線條粗細*/
+    public void SetLineWidth(int lineWidth) {
         this.lineWidth = lineWidth;
         PenStroke = new BasicStroke(this.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
         this.requestFocus();
@@ -145,15 +148,15 @@ public class Page extends JPanel {
             }
             /*Ctrl + + 變粗*/
             if (e.getKeyCode() == KeyEvent.VK_ADD && e.isControlDown() && lineWidth < 30) {
-                SetStroke(lineWidth + 1);
+                SetLineWidth(lineWidth + 1);
             }
             /*Ctrl + - 變細*/
             if (e.getKeyCode() == KeyEvent.VK_SUBTRACT && e.isControlDown() && lineWidth > 2) {
-                SetStroke(lineWidth - 1);
+                SetLineWidth(lineWidth - 1);
             }
             /*按下Shift*/
             if (e.isShiftDown()) {
-                isShiftDown = true;
+                ShiftDown = true;
             }
             /*按下Delete 刪除選取物件*/
             if (e.getKeyCode()== KeyEvent.VK_DELETE) {
@@ -168,7 +171,7 @@ public class Page extends JPanel {
         public void keyReleased(KeyEvent e) {
             /*放開Shift*/
             if (!e.isShiftDown()) {
-                isShiftDown = false;
+                ShiftDown = false;
             }
         }
     }
@@ -181,8 +184,8 @@ public class Page extends JPanel {
             p1 = e.getPoint();
             
             /*取得顏色*/
-            PenColor = ToolBar.setcolorPanel[0].getBackground();
-            EraserColor = ToolBar.setcolorPanel[1].getBackground();
+            PenColor = parant.toolBar.setcolorPanel[0].getBackground();
+            EraserColor = parant.toolBar.setcolorPanel[1].getBackground();
             
             /*在Page上點擊將 drawobject 狀態變成 Idle*/
             if (drawobject != null && drawobject.status == Status.Selected) {
@@ -212,7 +215,7 @@ public class Page extends JPanel {
             loc = new Point(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y));
             
             /*按下Shift 寬=高*/
-            if (isShiftDown) {
+            if (ShiftDown) {
                 width = height;
             }
             
