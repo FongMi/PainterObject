@@ -1,10 +1,7 @@
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
+import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +18,10 @@ import javax.swing.JFileChooser;
 public class Page extends JPanel {
     /*起始點、結束點、圖形起始點*/
     private Point p1, p2, loc;
-    /*圖形寬高、線條粗細、圖形計量、線條起點*/
-    private int width, height, lineWidth, shape_counter, Start;
+    /*圖形寬高、圖形計量、線條起點*/
+    private int width, height, shape_counter, Start;
+    /*線條粗細*/
+    public int lineWidth;
     /*畫筆顏色、橡皮擦顏色*/
     private Color PenColor, EraserColor;
     /*畫筆型式*/
@@ -52,6 +51,7 @@ public class Page extends JPanel {
         shape_counter = 0; //計算圖形數量
         type = Status.Pen; //畫筆型態預設=Pen
         status = Status.Draw; //狀態預設=Draw
+        //PenStroke = new SloppyStroke(2.0f, 3.0f);
         PenStroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
     }
 
@@ -61,14 +61,14 @@ public class Page extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         /*畫出線條及橡皮擦*/
         for (Entry<Integer, DrawObject> entry : shapeList.entrySet()) {
-            DrawObject value = entry.getValue();
-            switch (value.type) {
+            DrawObject line = entry.getValue();
+            switch (line.type) {
                 case Pen:
                 case Eraser:
                 case Line:
-                    g2d.setStroke(value.stroke);
-                    g2d.setColor(value.color);
-                    g2d.draw(value.shape);
+                    g2d.setStroke(line.stroke);
+                    g2d.setColor(line.color);
+                    g2d.draw(line.shape);
                     break;
             }
         }
@@ -133,7 +133,7 @@ public class Page extends JPanel {
         PenStroke = new BasicStroke(this.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
         this.requestFocus();
     }
-    
+
     /*鍵盤監聽事件*/
     class myKeyAdapter extends KeyAdapter {
         @Override
@@ -224,7 +224,7 @@ public class Page extends JPanel {
                     /*畫出線條*/
                     shape = new Line2D.Double(p1, p2);
                     /*建立物件，設定粗細、顏色*/
-                    drawobject = new DrawObject(Page.this, shape, type, lineWidth, PenColor);
+                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, PenColor);
                     /*設定起點、終點*/
                     drawobject.format(p1, p2);
                     /*加到HashMap*/
@@ -237,7 +237,7 @@ public class Page extends JPanel {
                     break;
                 case Eraser:
                     shape = new Line2D.Double(p1, p2);
-                    drawobject = new DrawObject(Page.this, shape, type, lineWidth, EraserColor);
+                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, EraserColor);
                     drawobject.format(p1, p2);
                     shape_counter++;
                     shapeList.put(shape_counter, drawobject);
@@ -246,7 +246,7 @@ public class Page extends JPanel {
                     break;
                 case Line:
                     shape = new Line2D.Double(p1, p2);
-                    drawobject = new DrawObject(Page.this, shape, type, lineWidth, PenColor);
+                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, PenColor);
                     drawobject.format(p1, p2);
                     break;
                 case Rectangle:
@@ -282,7 +282,7 @@ public class Page extends JPanel {
                     case Round_Rectangle:
                     case Oval:
                         /*建立物件，設定粗細、顏色*/
-                        drawobject = new DrawObject(Page.this, shape, type, lineWidth, PenColor);
+                        drawobject = new DrawObject(Page.this, shape, type, PenStroke, PenColor);
                         /*設定起點、寬高、填滿*/
                         drawobject.format(loc, width, height, isFill);
                         /*加到HashMap*/

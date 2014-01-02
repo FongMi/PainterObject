@@ -1,5 +1,4 @@
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -38,13 +37,13 @@ class DrawObject extends JPanel {
     ResizeBorder rborder;
         
     /*設定形狀、類型、粗細、顏色*/
-    DrawObject(Page page, Shape shape, Status type, int lineWidth, Color color) {
+    DrawObject(Page page, Shape shape, Status type, Stroke stroke, Color color) {
         this.page = page;
         this.shape = shape;
         this.type = type;
-        this.lineWidth = lineWidth;
+        this.stroke = stroke; 
         this.color = color;
-        stroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+        this.lineWidth = page.lineWidth;
     }
     
     /*設定線條區段*/
