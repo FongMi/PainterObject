@@ -5,7 +5,9 @@ import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import javax.swing.JPanel;
@@ -93,7 +95,6 @@ public class Page extends JPanel {
             g2d.draw(shape);
             shape = null;
         }
-        
     }
 
     public void Undo() {
@@ -320,10 +321,10 @@ public class Page extends JPanel {
         /*清空 shapeList*/
         shapeList.clear();
         /*清空 freeList*/
-        freeList.removeAll(freeList);
+        freeList.clear();
         /*清空畫面*/
-        image = null;
         this.removeAll();
+        image = null;
         shape_counter = 0;
         repaint();
     }
@@ -360,10 +361,38 @@ public class Page extends JPanel {
             this.paint(g);
             if (path != null) {
                 try {
-                    File file = new File(path, "未命名.png");
+                    File file = new File(path, "未命名"+getDateTime()+".png");
                     ImageIO.write(image, "png", file);
                 } catch (IOException ex) { }
             }
         }
+    }
+    
+    public String getDateTime() {
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
+        Date date = new Date();
+        String strDate = sdFormat.format(date);
+        return strDate;
+    }
+    
+    public void Convert() {
+        width = image.getWidth();
+        height = image.getHeight();
+        int gray;
+        int[] pixels = new int[width * height];
+        image.getRGB(0, 0, width, height, pixels, 0, width);
+        for (int y = 0; y < height; y++) {
+            int index = y * width;
+            for (int x = 0; x < width; x++) {
+                int rgb = pixels[index];
+                int r = (rgb & 0xff0000) >> 16;
+                int g = (rgb & 0x00ff00) >> 8;
+                int b = rgb & 0x0000ff;
+                gray = (r + g + b) / 3;
+                pixels[index++] = (0xff000000 | (gray << 16) | (gray << 8) | gray);
+            }
+        }
+        image.setRGB(0, 0, width, height, pixels, 0, width);
+        repaint();
     }
 }

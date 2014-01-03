@@ -49,7 +49,7 @@ public class ObjectToolBar extends JPanel implements ActionListener {
     ObjectToolBar(MainWindow p) {
         this.parant = p;
         this.setLayout(new FlowLayout(FlowLayout.LEFT));
-        this.setBackground(new Color(255, 250, 240));
+        this.setOpaque(false);
         
         toolBar = new JToolBar[toolBarName.length];
         for (int i = 0; i < toolBarName.length; i++) {

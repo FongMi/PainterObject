@@ -10,7 +10,7 @@ public class MenuBar extends JPanel implements ActionListener {
     JMenuBar jMenuBar;
     JMenu jMenu;
     JMenuItem jMenuItem[];
-    String menuItem[] = {"清除畫面", "開啟檔案", "儲存檔案", "結束"};
+    String menuItem[] = {"清除畫面", "開啟檔案", "儲存檔案", "灰階化", "結束"};
 
     MenuBar(MainWindow parant) {
         this.parant = parant;
@@ -40,6 +40,9 @@ public class MenuBar extends JPanel implements ActionListener {
             parant.page.Save();
         }
         if (e.getSource() == jMenuItem[3]) {
+            parant.page.Convert();
+        }
+        if (e.getSource() == jMenuItem[4]) {
             System.exit(0);
         }
     }
