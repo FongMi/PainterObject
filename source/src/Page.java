@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.imageio.ImageIO;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Page extends JPanel {
     /*MainWindow*/
@@ -40,7 +41,9 @@ public class Page extends JPanel {
     private final HashMap<Integer, DrawObject> shapeList = new HashMap<>();
     /*儲存線條起點終點*/
     private final ArrayList<DrawObject> freeList = new ArrayList();
-   
+    /*圖片暫存*/
+    BufferedImage image;
+    
     Page(MainWindow parant) {
         this.parant = parant;
         this.setBackground(Color.WHITE);
@@ -59,6 +62,10 @@ public class Page extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+        /*畫圖片*/
+        if (image != null) {
+            g2d.drawImage(image, 0, 0, this);
+        }
         /*畫出線條及橡皮擦*/
         for (Entry<Integer, DrawObject> entry : shapeList.entrySet()) {
             DrawObject line = entry.getValue();
@@ -86,6 +93,7 @@ public class Page extends JPanel {
             g2d.draw(shape);
             shape = null;
         }
+        
     }
 
     public void Undo() {
@@ -314,13 +322,15 @@ public class Page extends JPanel {
         /*清空 freeList*/
         freeList.removeAll(freeList);
         /*清空畫面*/
+        image = null;
         this.removeAll();
         shape_counter = 0;
         repaint();
     }
 
     /*開啟檔案*/
-    /*public void Open() {
+    public void Open() {
+        NewPage();
         JFileChooser Open_JC = new JFileChooser();
         Open_JC.setFileSelectionMode(JFileChooser.FILES_ONLY);
         Open_JC.setDialogTitle("開啟檔案");
@@ -335,7 +345,7 @@ public class Page extends JPanel {
             } catch (IOException e) {
             }
         }
-    }*/
+    }
 
     /*儲存檔案*/
     public void Save() {
@@ -345,7 +355,7 @@ public class Page extends JPanel {
         int result = Save_JC.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             String path = Save_JC.getSelectedFile().getAbsolutePath();
-            BufferedImage image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+            image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics g = image.getGraphics();
             this.paint(g);
             if (path != null) {
