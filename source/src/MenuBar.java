@@ -1,5 +1,5 @@
+
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -10,7 +10,7 @@ public class MenuBar extends JPanel implements ActionListener {
     JMenuBar jMenuBar;
     JMenu jMenu;
     JMenuItem jMenuItem[];
-    String menuItem[] = {"清除畫面", "儲存檔案", "結束"};
+    String menuItem[] = {"清除畫面", "開啟檔案", "儲存檔案", "結束"};
 
     MenuBar(MainWindow parant) {
         this.parant = parant;
@@ -34,9 +34,12 @@ public class MenuBar extends JPanel implements ActionListener {
             parant.page.NewPage();
         }
         if (e.getSource() == jMenuItem[1]) {
-            parant.page.Save();
+            parant.page.Open();
         }
         if (e.getSource() == jMenuItem[2]) {
+            parant.page.Save();
+        }
+        if (e.getSource() == jMenuItem[3]) {
             System.exit(0);
         }
     }
