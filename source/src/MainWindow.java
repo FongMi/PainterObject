@@ -7,10 +7,10 @@ public class MainWindow extends JFrame {
 
     Dimension d;
     ToolBar toolBar;
-    ObjectToolBar objectToolBar ;
+    ObjectToolBar objectToolBar;
     MenuBar menuBar;
     Page page;
-    static JLabel statusBar = new JLabel("滑鼠座標");
+    JLabel statusBar = new JLabel("滑鼠座標");
     Tabbed tabbed;
 
     MainWindow(String title, Dimension d) {
@@ -23,13 +23,15 @@ public class MainWindow extends JFrame {
 
         menuBar = new MenuBar(this);
         toolBar = new ToolBar(this);
-        objectToolBar = new ObjectToolBar (this);
+        objectToolBar = new ObjectToolBar(this);
+
         tabbed = new Tabbed(JTabbedPane.TOP);
-        tabbed.add("小畫家",toolBar);
-        tabbed.add("物件",objectToolBar);
+        tabbed.add("小畫家", toolBar);
+        tabbed.add("物件", objectToolBar);
+
         menuBar.add(tabbed);
         this.getContentPane().add(BorderLayout.NORTH, menuBar);
-        
+
         page = new Page(this);
         this.getContentPane().add(BorderLayout.CENTER, page);
 
