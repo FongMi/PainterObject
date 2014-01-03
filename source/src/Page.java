@@ -262,7 +262,7 @@ public class Page extends JPanel {
                     break;
             }
             repaint();
-            MainWindow.statusBar.setText("滑鼠座標: (" + e.getX() + "," + e.getY() + ")");
+            parant.statusBar.setText("滑鼠座標: (" + e.getX() + "," + e.getY() + ")");
         }
 
         @Override
@@ -303,7 +303,7 @@ public class Page extends JPanel {
 
         @Override
         public void mouseMoved(MouseEvent e) {
-            MainWindow.statusBar.setText("滑鼠座標: (" + e.getX() + "," + e.getY() + ")");
+            parant.statusBar.setText("滑鼠座標: (" + e.getX() + "," + e.getY() + ")");
         }
     }
 
