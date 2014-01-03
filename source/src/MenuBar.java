@@ -1,4 +1,3 @@
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -14,7 +13,7 @@ public class MenuBar extends JPanel implements ActionListener {
     String menuItem[] = {"清除畫面", "儲存檔案", "結束"};
 
     MenuBar(MainWindow parant) {
-        parant = parant;
+        this.parant = parant;
         this.setBackground(Color.WHITE);
         this.setLayout(new BorderLayout());
         jMenuBar = new JMenuBar();
