@@ -14,9 +14,9 @@ public class MenuBar extends JPanel implements ActionListener {
 
     MenuBar(MainWindow parant) {
         this.parant = parant;
-        this.setBackground(Color.WHITE);
         this.setLayout(new BorderLayout());
         jMenuBar = new JMenuBar();
+        jMenuBar.setOpaque(false);
         jMenu = new JMenu("檔案");
         jMenuItem = new JMenuItem[menuItem.length];
         for (int i = 0; i < menuItem.length; i++) {
