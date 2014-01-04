@@ -300,8 +300,8 @@ public class Page extends JPanel {
                         /*加到HashMap*/
                         shape_counter++;
                         shapeList.put(shape_counter, drawobject);
-                        /*加到 Page 畫面*/
-                        Page.this.add(drawobject);
+                        /*加到 Page 畫面, 0表示永遠在最上層*/
+                        Page.this.add(drawobject, 0);
                         break;
                 }
                 repaint();
@@ -361,20 +361,23 @@ public class Page extends JPanel {
             this.paint(g);
             if (path != null) {
                 try {
-                    File file = new File(path, "未命名"+getDateTime()+".png");
+                    File file = new File(path, "未命名" + getDateTime() + ".png");
                     ImageIO.write(image, "png", file);
-                } catch (IOException ex) { }
+                } catch (IOException ex) {
+                }
             }
         }
     }
-    
+
+    /*取得現在時間*/
     public String getDateTime() {
         SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
         Date date = new Date();
         String strDate = sdFormat.format(date);
         return strDate;
     }
-    
+
+    /*灰階化*/
     public void Convert() {
         width = image.getWidth();
         height = image.getHeight();
