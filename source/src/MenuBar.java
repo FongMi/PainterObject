@@ -10,8 +10,9 @@ public class MenuBar extends JPanel implements ActionListener {
     JMenuBar jMenuBar;
     JMenu jMenu;
     JMenuItem jMenuItem[];
-    String menuItem[] = {"清除畫面", "開啟檔案", "儲存檔案", "灰階化", "結束"};
-
+    String menuItem[] = {"開新檔案", "開啟舊檔", "儲存檔案", "灰階化", "結束"};
+    String menuItem_img[] = {"img/new.png", "img/open.png", "img/save.png", "img/gray.png", "img/exit.png"};
+    
     MenuBar(MainWindow parant) {
         this.parant = parant;
         this.setLayout(new BorderLayout());
@@ -22,6 +23,7 @@ public class MenuBar extends JPanel implements ActionListener {
         for (int i = 0; i < menuItem.length; i++) {
             jMenuItem[i] = new JMenuItem(menuItem[i]);
             jMenuItem[i].addActionListener((ActionListener) this);
+            jMenuItem[i].setIcon(new ImageIcon(this.getClass().getResource(menuItem_img[i])));
             jMenu.add(jMenuItem[i]);
         }
         jMenuBar.add(jMenu);

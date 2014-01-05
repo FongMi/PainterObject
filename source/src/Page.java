@@ -331,7 +331,6 @@ public class Page extends JPanel {
 
     /*開啟檔案*/
     public void Open() {
-        NewPage();
         JFileChooser Open_JC = new JFileChooser();
         Open_JC.setFileSelectionMode(JFileChooser.FILES_ONLY);
         Open_JC.setDialogTitle("開啟檔案");
@@ -341,6 +340,7 @@ public class Page extends JPanel {
         if (result == JFileChooser.APPROVE_OPTION) {
             File file = Open_JC.getSelectedFile();
             try {
+                NewPage();
                 image = ImageIO.read(new File(file.getAbsolutePath()));
                 repaint();
             } catch (IOException e) {
@@ -356,7 +356,7 @@ public class Page extends JPanel {
         int result = Save_JC.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             String path = Save_JC.getSelectedFile().getAbsolutePath();
-            image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+            BufferedImage image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics g = image.getGraphics();
             this.paint(g);
             if (path != null) {
