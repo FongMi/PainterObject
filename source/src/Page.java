@@ -276,38 +276,39 @@ public class Page extends JPanel {
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if (status == Status.Drawing) {
-                switch (type) {
-                    case Pen:
-                    case Eraser:
-                        /*設定線條區段*/
-                        drawobject.setSection(Start, shape_counter);
-                        /*新增線條區段*/
-                        freeList.add(drawobject);
-                        break;
-                    case Line:
-                        /*加到HashMap*/
-                        shape_counter++;
-                        shapeList.put(shape_counter, drawobject);
-                        break;
-                    case Rectangle:
-                    case Round_Rectangle:
-                    case Oval:
-                        /*建立物件，設定粗細、顏色*/
-                        drawobject = new DrawObject(Page.this, shape, type, PenStroke, PenColor);
-                        /*設定起點、寬高、填滿*/
-                        drawobject.format(loc, width, height, isFill);
-                        /*加到HashMap*/
-                        shape_counter++;
-                        shapeList.put(shape_counter, drawobject);
-                        /*加到 Page 畫面, 0表示永遠在最上層*/
-                        Page.this.add(drawobject, 0);
-                        break;
-                }
-                repaint();
-                /*狀態 = Draw*/
-                status = Status.Draw;
+            if (status != Status.Drawing) {
+                return;
             }
+            switch (type) {
+                case Pen:
+                case Eraser:
+                    /*設定線條區段*/
+                    drawobject.setSection(Start, shape_counter);
+                    /*新增線條區段*/
+                    freeList.add(drawobject);
+                    break;
+                case Line:
+                    /*加到HashMap*/
+                    shape_counter++;
+                    shapeList.put(shape_counter, drawobject);
+                    break;
+                case Rectangle:
+                case Round_Rectangle:
+                case Oval:
+                    /*建立物件，設定粗細、顏色*/
+                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, PenColor);
+                    /*設定起點、寬高、填滿*/
+                    drawobject.format(loc, width, height, isFill);
+                    /*加到HashMap*/
+                    shape_counter++;
+                    shapeList.put(shape_counter, drawobject);
+                    /*加到 Page 畫面, 0表示永遠在最上層*/
+                    Page.this.add(drawobject, 0);
+                    break;
+            }
+            repaint();
+            /*狀態 = Draw*/
+            status = Status.Draw;
         }
 
         @Override
@@ -316,7 +317,7 @@ public class Page extends JPanel {
         }
     }
 
-    /*清除畫面*/
+    /*開新檔案*/
     public void NewPage() {
         /*清空 shapeList*/
         shapeList.clear();
@@ -329,7 +330,7 @@ public class Page extends JPanel {
         repaint();
     }
 
-    /*開啟檔案*/
+    /*開啟舊檔*/
     public void Open() {
         JFileChooser Open_JC = new JFileChooser();
         Open_JC.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -379,6 +380,9 @@ public class Page extends JPanel {
 
     /*灰階化*/
     public void Convert() {
+        if (image == null) {
+            return;
+        }
         width = image.getWidth();
         height = image.getHeight();
         int gray;

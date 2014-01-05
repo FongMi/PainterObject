@@ -169,7 +169,6 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
             Point newP = SwingUtilities.convertPoint(drawobject, e.getPoint(), drawobject.getParent());
             int offset_x = newP.x - p.x;
             int offset_y = newP.y - p.y;
-
             switch (nowCorner) {
                 case 0: //西北
                     drawobject.setBounds(drawobject.getX() + offset_x, drawobject.getY() + offset_y, drawobject.getWidth() - offset_x, drawobject.getHeight() - offset_y);
