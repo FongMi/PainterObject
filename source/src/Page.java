@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.imageio.ImageIO;
 import javax.swing.JColorChooser;
@@ -372,7 +374,7 @@ public class Page extends JPanel {
 
     /*取得現在時間*/
     public String getDateTime() {
-        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd-hh-mm");
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
         Date date = new Date();
         String strDate = sdFormat.format(date);
         return strDate;
@@ -401,5 +403,22 @@ public class Page extends JPanel {
         }
         image.setRGB(0, 0, width, height, pixels, 0, width);
         repaint();
+    }
+    
+    /*擷取螢幕*/
+    public void ScreenShot() {
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Dimension screenSize = toolkit.getScreenSize();
+        Rectangle screenRect = new Rectangle(screenSize);
+        try {
+            parant.setVisible(false);
+            Thread.sleep(500);
+            Robot robot = new Robot();
+            BufferedImage screen_shot = robot.createScreenCapture(screenRect);
+            ImageIO.write(screen_shot, "png", new File("ScreenShot-" + getDateTime() + ".png"));
+            parant.setVisible(true);
+        } catch (Exception ex) {
+            Logger.getLogger(Page.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

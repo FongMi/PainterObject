@@ -1,4 +1,4 @@
-
+﻿
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -32,9 +32,11 @@ public class ToolBar extends JPanel implements ActionListener {
     
     /*功能按鈕*/
     JButton[] jBtn;
-    String btnName[][] = {{"復原","復原(Ctrl+Z) 復原上次的動作"},
-                          {"顏色","編輯色彩，從調色盤選取色彩"}};
-    String btnImage[] = {"img/undo.png", "img/color.png"};
+    String btnName[][] = {{"復原", "復原(Ctrl+Z) 復原上次的動作"},
+                          {"顏色", "編輯色彩，從調色盤選取色彩"},
+                          {"擷取螢幕", "擷取目前螢幕"}};
+    
+    String btnImage[] = {"img/undo.png", "img/color.png", "img/screenshot.png"};
 
     /*調色盤按鈕*/
     JToggleButton[] colorJTBtn;
@@ -207,6 +209,10 @@ public class ToolBar extends JPanel implements ActionListener {
         
         if (e.getSource() == jBtn[1]) {
             parant.page.ChooseColor();
+        }
+        
+        if (e.getSource() == jBtn[2]) {
+            parant.page.ScreenShot();
         }
     }
 }
