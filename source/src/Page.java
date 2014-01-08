@@ -28,7 +28,7 @@ public class Page extends JPanel {
     /*線條粗細*/
     public int lineWidth;
     /*畫筆顏色、橡皮擦顏色*/
-    private Color PenColor, EraserColor;
+    public Color penColor, eraserColor;
     /*畫筆型式*/
     private Stroke PenStroke;
     /*圖形暫存*/
@@ -37,8 +37,6 @@ public class Page extends JPanel {
     DrawObject drawobject;
     /*Shift 事件*/
     private boolean ShiftDown = false;
-    /*是否要填滿*/
-    public boolean isFill = false;
     /*畫筆型態、狀態*/
     Status type, status;
     /*儲存線條及圖形*/
@@ -59,6 +57,8 @@ public class Page extends JPanel {
         shape_counter = 0; //計算圖形數量
         type = Status.Pen; //畫筆型態預設=Pen
         status = Status.Draw; //狀態預設=Draw
+        penColor = Color.BLACK;
+        eraserColor = Color.WHITE;
         PenStroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
     }
 
@@ -86,12 +86,9 @@ public class Page extends JPanel {
         /*畫出拖曳軌跡*/
         if (shape != null) {
             if (type == Status.Eraser) {
-                g2d.setColor(EraserColor);
+                g2d.setColor(eraserColor);
             } else {
-                g2d.setColor(PenColor);
-            }
-            if (isFill) {
-                g2d.fill(shape);
+                g2d.setColor(penColor);
             }
             g2d.setStroke(PenStroke);
             g2d.draw(shape);
@@ -194,21 +191,21 @@ public class Page extends JPanel {
             /*取得起點*/
             p1 = e.getPoint();
             
-            /*取得顏色*/
-            PenColor = parant.toolBar.setcolorPanel[0].getBackground();
-            EraserColor = parant.toolBar.setcolorPanel[1].getBackground();
-            
             /*在Page上點擊將 drawobject 狀態變成 Idle*/
             if (drawobject != null && drawobject.status == Status.Selected) {
                 drawobject.status = Status.Idle;
                 drawobject.repaint();
             }
             
-            /*設定線條起點*/
             switch (type) {
                 case Pen:
                 case Eraser:
+                    /*設定線條起點*/
                     Start = shape_counter + 1;
+                    break;
+                case Fill:
+                    /*設定背景色彩*/
+                    Page.this.setBackground(penColor);
                     break;
             }
         }
@@ -240,7 +237,7 @@ public class Page extends JPanel {
                     /*畫出線條*/
                     shape = new Line2D.Double(p1, p2);
                     /*建立物件，設定粗細、顏色*/
-                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, PenColor);
+                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, penColor);
                     /*設定起點、終點*/
                     drawobject.format(p1, p2);
                     /*加到HashMap*/
@@ -251,7 +248,7 @@ public class Page extends JPanel {
                     break;
                 case Eraser:
                     shape = new Line2D.Double(p1, p2);
-                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, EraserColor);
+                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, eraserColor);
                     drawobject.format(p1, p2);
                     shape_counter++;
                     shapeList.put(shape_counter, drawobject);
@@ -259,7 +256,7 @@ public class Page extends JPanel {
                     break;
                 case Line:
                     shape = new Line2D.Double(p1, p2);
-                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, PenColor);
+                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, penColor);
                     drawobject.format(p1, p2);
                     break;
                 case Rectangle:
@@ -298,9 +295,9 @@ public class Page extends JPanel {
                 case Round_Rectangle:
                 case Oval:
                     /*建立物件，設定粗細、顏色*/
-                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, PenColor);
+                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, penColor);
                     /*設定起點、寬高、填滿*/
-                    drawobject.format(loc, width, height, isFill);
+                    drawobject.format(loc, width, height);
                     /*加到HashMap*/
                     shape_counter++;
                     shapeList.put(shape_counter, drawobject);

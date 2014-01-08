@@ -14,12 +14,10 @@ public class ObjectToolBar extends JPanel implements ActionListener {
     /*畫筆按鈕*/
     JToggleButton[] pen_JTBtn;
     String penBtnName[][] = {{"Pen", "鉛筆，使用選取的線條寬度繪製任意形狀的線條"},
-                             {"Eraser", "橡皮擦，清除圖片的的一部份，並以背景色彩取代"}};
-    String penImage[] = {"img/pencil.png", "img/eraser.png", "img/move.png"};
-    
-    /*填滿按鈕*/
-    JToggleButton fill_JTBtn;
-    
+                             {"Eraser", "橡皮擦，清除圖片的的一部份，並以背景色彩取代"},
+                             {"Fill", "填入色彩，在畫布上的某個區域按一下，以色彩1填滿"}};
+    String penImage[] = {"img/pencil.png", "img/eraser.png", "img/fill.png"};
+
     /*形狀按鈕*/
     JToggleButton[] shape_JTBtn;
     String shapeBtnName[][] = {{"Line", "直線"}, {"Rectangle", "矩形"}, {"Round_Rectangle", "圓角矩形"}, {"Oval", "橢圓形"}};
@@ -71,15 +69,7 @@ public class ObjectToolBar extends JPanel implements ActionListener {
             buttonGroup.add(pen_JTBtn[i]);
             toolBar[0].add(pen_JTBtn[i]);
         }
-        
-        /*新增填滿按鈕*/
-        fill_JTBtn = new JToggleButton();
-        fill_JTBtn.setIcon(new ImageIcon(this.getClass().getResource("img/fill.png")));
-        fill_JTBtn.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        fill_JTBtn.setFocusable(false);
-        fill_JTBtn.addActionListener(this);
-        toolBar[0].add(fill_JTBtn);
-        
+
         /*新增形狀按鈕*/
         shape_JTBtn = new JToggleButton[shapeBtnName.length];
         for (int i = 0; i < shapeBtnName.length; i++) {
@@ -161,8 +151,8 @@ public class ObjectToolBar extends JPanel implements ActionListener {
             storebar[i].add(BorderLayout.SOUTH, new JLabel(toolBarName[i], JLabel.CENTER));
             this.add(storebar[i]);
         }
-        //this.add(toolBar[3]);
-        //this.add(toolBar[4]);
+        this.add(toolBar[3]);
+        this.add(toolBar[4]);
     }
 
     @Override
@@ -171,19 +161,15 @@ public class ObjectToolBar extends JPanel implements ActionListener {
             if (e.getSource() == pen_JTBtn[i]) {
                 parant.page.type = Status.valueOf(penBtnName[i][0]);
                 parant.page.status = Status.Draw;
+                break;
             }
-        }
-        
-        if (e.getSource() == fill_JTBtn) {
-            AbstractButton abstractButton = (AbstractButton) e.getSource();
-            boolean selected = abstractButton.getModel().isSelected();
-            parant.page.isFill = selected;
         }
 
         for (int i = 0; i < shapeBtnName.length; i++) {
             if (e.getSource() == shape_JTBtn[i]) {
                 parant.page.type = Status.valueOf(shapeBtnName[i][0]);
                 parant.page.status = Status.Draw;
+                break;
             }
         }
         
@@ -195,6 +181,7 @@ public class ObjectToolBar extends JPanel implements ActionListener {
                     setcolorPanel[1].setBackground(colors[i]);
                 }
             }
+            break;
         }
 
         if (e.getSource() == lineWidthList) {

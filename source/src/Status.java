@@ -1,5 +1,5 @@
 
 enum Status {
 
-    Pen, Eraser, Line, Rectangle, Round_Rectangle, Oval, Idle, Draw, Drawing, Selected, Resize
+    Pen, Eraser, Fill, Line, Rectangle, Round_Rectangle, Oval, Idle, Draw, Drawing, Selected, Resize
 }

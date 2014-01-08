@@ -16,8 +16,6 @@ class DrawObject extends JPanel {
     Stroke stroke;
     /*顏色*/
     Color color;
-    /*填滿*/
-    boolean isFill;
     /*圖形*/
     Shape shape;
     /*畫筆型態、狀態*/
@@ -50,11 +48,10 @@ class DrawObject extends JPanel {
     }
 
     /*設定圖形起點、寬高、填滿、外框*/
-    void format(Point loc, int width, int height, boolean isFill) {
+    void format(Point loc, int width, int height) {
         this.loc = loc;
         this.width = width;
         this.height = height;
-        this.isFill = isFill;
         this.status = Status.Selected;
         /*新增滑鼠事件、設定外框*/
         rborder = new ResizeBorder(this, Color.RED);
@@ -90,9 +87,6 @@ class DrawObject extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(color);
         g2d.setStroke(stroke);
-        if (isFill) {
-            g2d.fill(shape);
-        }
         g2d.draw(shape);
     }
 
@@ -105,10 +99,16 @@ class DrawObject extends JPanel {
             if (page.drawobject.status == Status.Selected) {
                 page.drawobject.status = Status.Idle;
             }
-            /*如果目前物件是閒置狀態，就變成 Selected*/
+            /*如果物件是閒置狀態，就變成 Selected*/
             if (DrawObject.this.status == Status.Idle) {
                 DrawObject.this.status = Status.Selected;
                 page.drawobject = DrawObject.this;
+            }
+            /*如果物件是選擇狀態並且畫筆類型為填滿則填滿*/
+            if (DrawObject.this.status == Status.Selected && page.type == Status.Fill) {
+                DrawObject.this.setOpaque(true);
+                DrawObject.this.color = page.penColor;
+                DrawObject.this.setBackground(page.penColor);
             }
             page.repaint();
         }
