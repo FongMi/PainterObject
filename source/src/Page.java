@@ -30,7 +30,7 @@ public class Page extends JPanel {
     /*畫筆顏色、橡皮擦顏色*/
     public Color penColor, eraserColor;
     /*畫筆型式*/
-    private Stroke PenStroke;
+    private Stroke penStroke;
     /*圖形暫存*/
     private Shape shape = null;
     /*DrawObject 暫存*/
@@ -57,9 +57,9 @@ public class Page extends JPanel {
         shape_counter = 0; //計算圖形數量
         type = Status.Pen; //畫筆型態預設=Pen
         status = Status.Draw; //狀態預設=Draw
-        penColor = Color.BLACK;
-        eraserColor = Color.WHITE;
-        PenStroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+        penColor = Color.BLACK; //畫筆顏色
+        eraserColor = Color.WHITE; //橡皮擦顏色
+        penStroke = new BasicStroke(lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
     }
 
     @Override
@@ -77,12 +77,16 @@ public class Page extends JPanel {
                 case Pen:
                 case Eraser:
                 case Line:
+                case Triangle:
+                case Star_4:
+                case Star_5:
                     g2d.setStroke(line.stroke);
                     g2d.setColor(line.color);
                     g2d.draw(line.shape);
                     break;
             }
         }
+        
         /*畫出拖曳軌跡*/
         if (shape != null) {
             if (type == Status.Eraser) {
@@ -90,7 +94,7 @@ public class Page extends JPanel {
             } else {
                 g2d.setColor(penColor);
             }
-            g2d.setStroke(PenStroke);
+            g2d.setStroke(penStroke);
             g2d.draw(shape);
             shape = null;
         }
@@ -112,6 +116,9 @@ public class Page extends JPanel {
                         freeList.remove(f_size);
                     }
                 case Line:
+                case Triangle:
+                case Star_4:
+                case Star_5:
                     shapeList.remove(shape_counter);
                     shape_counter--;
                     break;
@@ -142,8 +149,34 @@ public class Page extends JPanel {
     /*設定線條粗細*/
     public void SetLineWidth(int lineWidth) {
         this.lineWidth = lineWidth;
-        PenStroke = new BasicStroke(this.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
+        penStroke = new BasicStroke(this.lineWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
         this.requestFocus();
+    }
+    
+    /*星星圖形*/
+    public Shape createStar(int arms, Point center, double rOuter, double rInner) {
+        double angle = Math.PI / arms;
+        GeneralPath path = new GeneralPath();
+        for (int i = 0; i < 2 * arms; i++) {
+            double r = (i & 1) == 0 ? rOuter : rInner;
+            Point2D.Double p = new Point2D.Double(center.x + Math.cos(i * angle) * r, center.y + Math.sin(i * angle) * r);
+            if (i == 0) {
+                path.moveTo(p.getX(), p.getY());
+            } else {
+                path.lineTo(p.getX(), p.getY());
+            }
+        }
+        path.closePath();
+        return path;
+    }
+
+    /*三角形*/
+    public Shape createTriangle(Point p1, Point p2, Point p3) {
+        Polygon poly = new Polygon();
+        poly.addPoint(p1.x, p1.y);
+        poly.addPoint(p2.x, p2.y);
+        poly.addPoint(p3.x, p3.y);
+        return poly;
     }
 
     /*鍵盤監聽事件*/
@@ -237,9 +270,7 @@ public class Page extends JPanel {
                     /*畫出線條*/
                     shape = new Line2D.Double(p1, p2);
                     /*建立物件，設定粗細、顏色*/
-                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, penColor);
-                    /*設定起點、終點*/
-                    drawobject.format(p1, p2);
+                    drawobject = new DrawObject(Page.this, shape, type, penStroke, penColor);
                     /*加到HashMap*/
                     shape_counter++;
                     shapeList.put(shape_counter, drawobject);
@@ -248,16 +279,26 @@ public class Page extends JPanel {
                     break;
                 case Eraser:
                     shape = new Line2D.Double(p1, p2);
-                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, eraserColor);
-                    drawobject.format(p1, p2);
+                    drawobject = new DrawObject(Page.this, shape, type, penStroke, eraserColor);
                     shape_counter++;
                     shapeList.put(shape_counter, drawobject);
                     p1 = p2;
                     break;
                 case Line:
                     shape = new Line2D.Double(p1, p2);
-                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, penColor);
-                    drawobject.format(p1, p2);
+                    drawobject = new DrawObject(Page.this, shape, type, penStroke, penColor);
+                    break;
+                case Triangle:
+                    shape = createTriangle(p1, new Point(p1.x, p2.y), p2);
+                    drawobject = new DrawObject(Page.this, shape, type, penStroke, penColor);
+                    break;
+                case Star_4:
+                    shape = createStar(4, p1, width, width / 3);
+                    drawobject = new DrawObject(Page.this, shape, type, penStroke, penColor);
+                    break;
+                case Star_5:
+                    shape = createStar(5, p1, width, width / 3);
+                    drawobject = new DrawObject(Page.this, shape, type, penStroke, penColor);
                     break;
                 case Rectangle:
                     shape = new Rectangle2D.Double(loc.x, loc.y, width, height);
@@ -287,6 +328,9 @@ public class Page extends JPanel {
                     freeList.add(drawobject);
                     break;
                 case Line:
+                case Triangle:
+                case Star_4:
+                case Star_5:
                     /*加到HashMap*/
                     shape_counter++;
                     shapeList.put(shape_counter, drawobject);
@@ -295,7 +339,7 @@ public class Page extends JPanel {
                 case Round_Rectangle:
                 case Oval:
                     /*建立物件，設定粗細、顏色*/
-                    drawobject = new DrawObject(Page.this, shape, type, PenStroke, penColor);
+                    drawobject = new DrawObject(Page.this, shape, type, penStroke, penColor);
                     /*設定起點、寬高、填滿*/
                     drawobject.format(loc, width, height);
                     /*加到HashMap*/
@@ -342,6 +386,7 @@ public class Page extends JPanel {
             try {
                 NewPage();
                 image = ImageIO.read(new File(file.getAbsolutePath()));
+                this.setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
                 repaint();
             } catch (IOException e) {
             }

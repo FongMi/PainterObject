@@ -11,17 +11,16 @@ public class MainWindow extends JFrame {
     Page page;
     JLabel statusBar;
     
-
     MainWindow(String title) {
         super(title);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         /*預設開啟最大化*/
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         /*設定最小畫面Size*/
-        this.setMinimumSize(new Dimension(1024, 768));
+        this.setMinimumSize(new Dimension(1152, 768));
         /*設定位置*/
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation((screenSize.width - 1024) / 2, (screenSize.height - 768) / 2);
+        this.setLocation((screenSize.width - 1152) / 2, (screenSize.height - 768) / 2);
         
         /*ToolBar*/
         toolBar = new ToolBar(this);
@@ -42,7 +41,9 @@ public class MainWindow extends JFrame {
         
         /*Page*/
         page = new Page(this);
-        this.getContentPane().add(BorderLayout.CENTER, page);
+        JScrollPane scrollpane = new JScrollPane(page);
+        scrollpane.setPreferredSize(new Dimension(1152, 768));
+        this.getContentPane().add(BorderLayout.CENTER, scrollpane);
         
         /*statusBar*/
         statusBar = new JLabel("滑鼠座標");

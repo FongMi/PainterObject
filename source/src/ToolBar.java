@@ -20,8 +20,8 @@ public class ToolBar extends JPanel implements ActionListener {
     
     /*形狀按鈕*/
     JToggleButton[] shape_JTBtn;
-    String shapeBtnName[][] = {{"Line", "直線"}, {"Rectangle", "矩形"}, {"Round_Rectangle", "圓角矩形"}, {"Oval", "橢圓形"}};
-    String shapeImage[] = {"img/line.png", "img/rectangle.png", "img/round_rectangle.png", "img/oval.png"};
+    String shapeBtnName[][] = {{"Line", "直線"}, {"Rectangle", "矩形"}, {"Round_Rectangle", "圓角矩形"}, {"Oval", "橢圓形"}, {"Triangle", "直角三角形"}, {"Star_4", "四角星形"}, {"Star_5", "五角星形"}};
+    String shapeImage[] = {"img/line.png", "img/rectangle.png", "img/round_rectangle.png", "img/oval.png", "img/triangle.png", "img/star_4.png", "img/star_5.png"};
     
     /*線條設定*/
     String[] lineWidth = {"▁▁","▃▃","▅▅","▇▇"};
