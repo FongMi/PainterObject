@@ -25,12 +25,14 @@ public class Page extends JPanel {
     private Point p1, p2, loc;
     /*圖形寬高、圖形計量、線條起點*/
     private int width, height, shape_counter, Start;
+    /*畫筆型式*/
+    private Stroke penStroke;
     /*線條粗細*/
     public int lineWidth;
     /*畫筆顏色、橡皮擦顏色*/
     public Color penColor, eraserColor;
-    /*畫筆型式*/
-    private Stroke penStroke;
+    /*星星角數量, 多邊形數量*/
+    public int star_arm = 0, polygon_side = 0;
     /*圖形暫存*/
     private Shape shape = null;
     /*DrawObject 暫存*/
@@ -78,8 +80,8 @@ public class Page extends JPanel {
                 case Eraser:
                 case Line:
                 case Triangle:
-                case Star_4:
-                case Star_5:
+                case Star:
+                case Polygon:
                     g2d.setStroke(line.stroke);
                     g2d.setColor(line.color);
                     g2d.draw(line.shape);
@@ -117,8 +119,8 @@ public class Page extends JPanel {
                     }
                 case Line:
                 case Triangle:
-                case Star_4:
-                case Star_5:
+                case Star:
+                case Polygon:
                     shapeList.remove(shape_counter);
                     shape_counter--;
                     break;
@@ -130,6 +132,8 @@ public class Page extends JPanel {
                     shape_counter--;
                     break;
             }
+        } else if (image != null) {
+            image = null;
         }
         repaint();
     }
@@ -176,6 +180,15 @@ public class Page extends JPanel {
         poly.addPoint(p1.x, p1.y);
         poly.addPoint(p2.x, p2.y);
         poly.addPoint(p3.x, p3.y);
+        return poly;
+    }
+    
+    /*多邊形*/
+    public Shape createPolygon(int arms, Point p1, int width) {
+        Polygon poly = new Polygon();
+        for (int i = 0; i < arms; i++) {
+            poly.addPoint((int) (p1.x + width * Math.cos(i * 2 * Math.PI / arms)), (int) (p1.y + width * Math.sin(i * 2 * Math.PI / arms)));
+        }
         return poly;
     }
 
@@ -292,12 +305,12 @@ public class Page extends JPanel {
                     shape = createTriangle(p1, new Point(p1.x, p2.y), p2);
                     drawobject = new DrawObject(Page.this, shape, type, penStroke, penColor);
                     break;
-                case Star_4:
-                    shape = createStar(4, p1, width, width / 3);
+                case Star:
+                    shape = createStar(star_arm, p1, width, width / 3);
                     drawobject = new DrawObject(Page.this, shape, type, penStroke, penColor);
                     break;
-                case Star_5:
-                    shape = createStar(5, p1, width, width / 3);
+                case Polygon:
+                    shape = createPolygon(polygon_side, p1, width);
                     drawobject = new DrawObject(Page.this, shape, type, penStroke, penColor);
                     break;
                 case Rectangle:
@@ -329,8 +342,8 @@ public class Page extends JPanel {
                     break;
                 case Line:
                 case Triangle:
-                case Star_4:
-                case Star_5:
+                case Star:
+                case Polygon:
                     /*加到HashMap*/
                     shape_counter++;
                     shapeList.put(shape_counter, drawobject);
@@ -346,7 +359,7 @@ public class Page extends JPanel {
                     shape_counter++;
                     shapeList.put(shape_counter, drawobject);
                     /*加到 Page 畫面, 0表示永遠在最上層*/
-                    Page.this.add(drawobject, 0);
+                    Page.this.add(drawobject,0);
                     break;
             }
             repaint();
@@ -386,7 +399,7 @@ public class Page extends JPanel {
             try {
                 NewPage();
                 image = ImageIO.read(new File(file.getAbsolutePath()));
-                this.setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
+                this.setPreferredSize(new Dimension(this.getWidth(), image.getHeight()));
                 repaint();
             } catch (IOException e) {
             }
@@ -454,11 +467,11 @@ public class Page extends JPanel {
         Rectangle screenRect = new Rectangle(screenSize);
         try {
             parant.setVisible(false);
-            Thread.sleep(500);
+            Thread.sleep(300);
             Robot robot = new Robot();
             BufferedImage screen_shot = robot.createScreenCapture(screenRect);
-            ImageIO.write(screen_shot, "png", new File("ScreenShot-" + getDateTime() + ".png"));
             parant.setVisible(true);
+            ImageIO.write(screen_shot, "png", new File("ScreenShot-" + getDateTime() + ".png"));
         } catch (Exception ex) {
             Logger.getLogger(Page.class.getName()).log(Level.SEVERE, null, ex);
         }
