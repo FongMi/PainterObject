@@ -359,7 +359,7 @@ public class Page extends JPanel {
                     shape_counter++;
                     shapeList.put(shape_counter, drawobject);
                     /*加到 Page 畫面, 0表示永遠在最上層*/
-                    Page.this.add(drawobject,0);
+                    Page.this.add(drawobject, 0);
                     break;
             }
             repaint();
