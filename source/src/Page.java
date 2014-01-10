@@ -24,7 +24,7 @@ public class Page extends JPanel {
     /*起始點、結束點、圖形起始點*/
     private Point p1, p2, loc;
     /*圖形寬高、圖形計量、線條起點*/
-    private int width, height, shape_counter, Start;
+    private int width, height, shape_counter, UML_counter, Start;
     /*畫筆型式*/
     private Stroke penStroke;
     /*線條粗細*/
@@ -43,6 +43,7 @@ public class Page extends JPanel {
     Status type, status;
     /*儲存線條及圖形*/
     private final HashMap<Integer, DrawObject> shapeList = new HashMap<>();
+    private final HashMap<Integer,UMLObject> UMLObjectList = new HashMap<>();
     /*儲存線條起點終點*/
     private final ArrayList<DrawObject> freeList = new ArrayList();
     /*圖片暫存*/
@@ -64,6 +65,7 @@ public class Page extends JPanel {
         this.addMouseMotionListener(new UMLPageListener());
         lineWidth = 2; //粗細預設=2
         shape_counter = 0; //計算圖形數量
+        UML_counter = 0;
         type = Status.Pen; //畫筆型態預設=Pen
         status = Status.Draw; //狀態預設=Draw
         penColor = Color.BLACK; //畫筆顏色
@@ -110,8 +112,8 @@ public class Page extends JPanel {
     }
 
     public void Undo() {
-        if(shape_counter > 0) {
-            switch(shapeList.get(shape_counter).type) {
+        if (shape_counter > 0) {
+            switch (shapeList.get(shape_counter).type) {
                 case Pen:
                 case Eraser:
                     int f_size = freeList.size() - 1;
@@ -139,6 +141,10 @@ public class Page extends JPanel {
                     shape_counter--;
                     break;
             }
+        } else if (UML_counter > 0) {
+            Page.this.remove(UMLObjectList.get(UML_counter));
+            UMLObjectList.remove(UML_counter);
+            UML_counter--;
         } else if (image != null) {
             image = null;
         }
@@ -223,6 +229,12 @@ public class Page extends JPanel {
             if (e.getKeyCode()== KeyEvent.VK_DELETE) {
                 if (drawobject != null && drawobject.status == Status.Selected) {
                     Page.this.remove(drawobject);
+                    repaint();
+                }
+            }
+            if (e.getKeyCode()== KeyEvent.VK_DELETE) {
+                if (activeUMLO != null && activeUMLO.status == Status.Selected) {
+                    Page.this.remove(activeUMLO);
                     repaint();
                 }
             }
@@ -387,63 +399,65 @@ public class Page extends JPanel {
 
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
-                if (activeUMLO != null && activeUMLO.status == Status.Selected) 
-                {
+                if (activeUMLO != null && activeUMLO.status == Status.Selected) {
                     activeUMLO.UMLMenu.setVisible(false);
                     activeUMLO.status = Status.Idle;
                     activeUMLO.repaint();
-                    
+
                 }
             }
         }
-    
 
         public void mousePressed(MouseEvent e) {
             SP = e.getPoint();
             if (type == Status.Class) {
-                if(activeUMLO != null){
+                if (activeUMLO != null) {
                     activeUMLO.status = Status.Idle;
                     activeUMLO.UMLMenu.setVisible(false);
                 }
-                
                 activeUMLO = new UMLObject(Page.this);
-                Page.this.add(activeUMLO);  
+                UML_counter++;
+                UMLObjectList.put(UML_counter, activeUMLO);
+                Page.this.add(activeUMLO);
             }
             repaint();
         }
 
-        
         public void mouseDragged(MouseEvent e) {
-            EP=e.getPoint();
-            //計算長寬
-            width = Math.abs(EP.x - SP.x);
-            height = Math.abs(EP.y - SP.y);
-            
-            //計算位置(象限)
-            Location = new Point(Math.min(SP.x, EP.x), Math.min(SP.y, EP.y));
-            activeUMLO.format(Location, width, height);
-            activeUMLO.updateUI();
-            activeUMLO.repaint();
-        }
-        
-        public void mouseReleased(MouseEvent e) {
-            activeUMLO.status = Status.Selected;
-            activeUMLO.repaint();
+            if (type == Status.Class) {
+                EP = e.getPoint();
+                //計算長寬
+                width = Math.abs(EP.x - SP.x);
+                height = Math.abs(EP.y - SP.y);
+
+                //計算位置(象限)
+                Location = new Point(Math.min(SP.x, EP.x), Math.min(SP.y, EP.y));
+                activeUMLO.format(Location, width, height);
+                activeUMLO.updateUI();
+                activeUMLO.repaint();
+            }
 
         }
-        
-    
+
+        public void mouseReleased(MouseEvent e) {
+            if (type == Status.Class) {
+                activeUMLO.status = Status.Selected;
+                activeUMLO.repaint();
+            }
+        }
     }
     /*開新檔案*/
     public void NewPage() {
         /*清空 shapeList*/
         shapeList.clear();
+        UMLObjectList.clear();
         /*清空 freeList*/
         freeList.clear();
         /*清空畫面*/
         this.removeAll();
         image = null;
         shape_counter = 0;
+        UML_counter = 0;
         repaint();
     }
 

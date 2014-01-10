@@ -111,13 +111,15 @@ public class ToolBar extends JPanel implements ActionListener {
         for (int i = 0; i < 2; i++) {
             setcolorPanel[i] = new JPanel();
             setcolorPanel[i].setBackground(colors[i]);
-            setcolorPanel[i].setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+            setcolorPanel[i].setBorder(BorderFactory.createEmptyBorder(7, 7, 15, 8));
             colorJTBtn[i] = new JToggleButton();
+            colorJTBtn[i].setLayout(new GridLayout(2, 1));
             colorJTBtn[i].setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
             colorJTBtn[i].setToolTipText(colorToolTip[i]);
             colorJTBtn[i].setFocusable(false);
             colorJTBtn[0].setSelected(true);
             colorJTBtn[i].add(setcolorPanel[i]);
+            colorJTBtn[i].add(new JLabel("色彩"+(i+1)));
             color_ButtonGroup.add(colorJTBtn[i]);
             toolBar[4].add(colorJTBtn[i]);
         }
@@ -130,7 +132,7 @@ public class ToolBar extends JPanel implements ActionListener {
             colorbar.setFloatable(false);
             colorbar.setLayout(new GridLayout(2,10));
             selectColorPanel[i] = new JPanel();
-            selectColorPanel[i].setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            selectColorPanel[i].setBorder(BorderFactory.createEmptyBorder(10, 8, 12, 12));
             selectColorPanel[i].setBackground(colors[i]);
             colorsBtn[i] = new JButton();
             colorsBtn[i].setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.WHITE));
@@ -157,12 +159,12 @@ public class ToolBar extends JPanel implements ActionListener {
         });
         }
 
-        toolBar[5].add(colorbar);
+        toolBar[4].add(colorbar);
 
         /*ToolBar 版面設置*/
         JToolBar[] storebar;
         storebar = new JToolBar[5];
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 4; i++) {
             storebar[i] = new JToolBar();
             storebar[i].setFloatable(false);
             storebar[i].setLayout(new BorderLayout());
@@ -170,7 +172,10 @@ public class ToolBar extends JPanel implements ActionListener {
             storebar[i].add(BorderLayout.SOUTH, new JLabel(toolBarName[i], JLabel.CENTER));
             this.add(storebar[i]);
         }
-        this.add(toolBar[5]);
+        storebar[4] = new JToolBar();
+        storebar[4].setFloatable(false);
+        storebar[4].add(toolBar[4]);
+        this.add(storebar[4]);
     }
 
     @Override
@@ -179,6 +184,7 @@ public class ToolBar extends JPanel implements ActionListener {
             if (e.getSource() == pen_JTBtn[i]) {
                 parant.page.type = Status.valueOf(penBtnName[i][0]);
                 parant.page.status = Status.Draw;
+                System.out.println(parant.page.type);
                 break;
             }
         }
@@ -187,6 +193,7 @@ public class ToolBar extends JPanel implements ActionListener {
             if (e.getSource() == shape_JTBtn[i]) {
                 parant.page.type = Status.valueOf(shapeBtnName[i][0]);
                 parant.page.status = Status.Draw;
+                System.out.println(parant.page.type);
                 if (i == 5) {
                     String side = JOptionPane.showInputDialog("請輸入要幾個角?");
                     parant.page.star_arm = side != null ? Integer.parseInt(side) : 5;
@@ -196,6 +203,7 @@ public class ToolBar extends JPanel implements ActionListener {
                     parant.page.polygon_side = side != null ? Integer.parseInt(side) : 5;
                 }
                 break;
+                
             }
         }
         
