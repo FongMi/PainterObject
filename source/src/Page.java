@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JPanel;
 import javax.imageio.ImageIO;
 import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Page extends JPanel {
@@ -24,7 +24,7 @@ public class Page extends JPanel {
     /*起始點、結束點、圖形起始點*/
     private Point p1, p2, loc;
     /*圖形寬高、圖形計量、線條起點*/
-    private int width, height, shape_counter, UML_counter, Start;
+    private int width, height, shape_counter, Start;
     /*畫筆型式*/
     private Stroke penStroke;
     /*線條粗細*/
@@ -43,17 +43,11 @@ public class Page extends JPanel {
     Status type, status;
     /*儲存線條及圖形*/
     private final HashMap<Integer, DrawObject> shapeList = new HashMap<>();
-    private final HashMap<Integer,UMLObject> UMLObjectList = new HashMap<>();
     /*儲存線條起點終點*/
     private final ArrayList<DrawObject> freeList = new ArrayList();
     /*圖片暫存*/
     BufferedImage image;
-    
-    /*紀錄ClassDiagram位置*/
-    Point SP,EP,Location ;
-    UMLObject activeUMLO;
-    
-    
+
     Page(MainWindow parant) {
         this.parant = parant;
         this.setBackground(Color.WHITE);
@@ -61,11 +55,8 @@ public class Page extends JPanel {
         this.addMouseListener(new myMouseAdapter());
         this.addMouseMotionListener(new myMouseAdapter());
         this.addKeyListener(new myKeyAdapter());
-        this.addMouseListener(new UMLPageListener());
-        this.addMouseMotionListener(new UMLPageListener());
         lineWidth = 2; //粗細預設=2
         shape_counter = 0; //計算圖形數量
-        UML_counter = 0;
         type = Status.Pen; //畫筆型態預設=Pen
         status = Status.Draw; //狀態預設=Draw
         penColor = Color.BLACK; //畫筆顏色
@@ -136,15 +127,12 @@ public class Page extends JPanel {
                 case Rectangle:
                 case Round_Rectangle:
                 case Oval:
+                case Class:
                     Page.this.remove(shapeList.get(shape_counter));
                     shapeList.remove(shape_counter);
                     shape_counter--;
                     break;
             }
-        } else if (UML_counter > 0) {
-            Page.this.remove(UMLObjectList.get(UML_counter));
-            UMLObjectList.remove(UML_counter);
-            UML_counter--;
         } else if (image != null) {
             image = null;
         }
@@ -160,6 +148,7 @@ public class Page extends JPanel {
             } else if (parant.toolBar.colorJTBtn[1].isSelected()) {
                 parant.toolBar.setcolorPanel[1].setBackground(c);
             }
+            penColor = c;
         }
     }
 
@@ -232,12 +221,6 @@ public class Page extends JPanel {
                     repaint();
                 }
             }
-            if (e.getKeyCode()== KeyEvent.VK_DELETE) {
-                if (activeUMLO != null && activeUMLO.status == Status.Selected) {
-                    Page.this.remove(activeUMLO);
-                    repaint();
-                }
-            }
         }
 
         @Override
@@ -259,6 +242,9 @@ public class Page extends JPanel {
             /*在Page上點擊將 drawobject 狀態變成 Idle*/
             if (drawobject != null && drawobject.status == Status.Selected) {
                 drawobject.status = Status.Idle;
+                if (drawobject.uMLMenu != null) {
+                    drawobject.uMLMenu.setVisible(false);
+                }
                 drawobject.repaint();
             }
             
@@ -267,6 +253,12 @@ public class Page extends JPanel {
                 case Eraser:
                     /*設定線條起點*/
                     Start = shape_counter + 1;
+                    break;
+                case Class:
+                    drawobject = new DrawObject(Page.this, type);
+                    shape_counter++;
+                    shapeList.put(shape_counter, drawobject);
+                    Page.this.add(drawobject, 0);
                     break;
                 case Fill:
                     /*設定背景色彩*/
@@ -296,7 +288,7 @@ public class Page extends JPanel {
             if (status == Status.Draw) {
                 status = Status.Drawing;
             }
-
+            
             switch (type) {
                 case Pen:
                     /*畫出線條*/
@@ -341,6 +333,11 @@ public class Page extends JPanel {
                 case Oval:
                     shape = new Ellipse2D.Double(loc.x, loc.y, width, height);
                     break;
+                case Class:
+                    drawobject.UMLformat(loc, width, height);
+                    drawobject.updateUI();
+                    drawobject.repaint();
+                    break;
             }
             repaint();
             parant.statusBar.setText("滑鼠座標: (" + e.getX() + "," + e.getY() + ")");
@@ -377,8 +374,11 @@ public class Page extends JPanel {
                     /*加到HashMap*/
                     shape_counter++;
                     shapeList.put(shape_counter, drawobject);
-                    /*加到 Page 畫面, 0表示永遠在最上層*/
-                    Page.this.add(drawobject, 0);
+                    /*加到 Page 畫面*/
+                    Page.this.add(drawobject);
+                    break;
+                case Class:
+                    drawobject.repaint();
                     break;
             }
             repaint();
@@ -392,72 +392,16 @@ public class Page extends JPanel {
         }
     }
 
-    
-    /*UML滑鼠監聽事件*/
-    
-    class UMLPageListener extends MouseAdapter {
-
-        public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 2) {
-                if (activeUMLO != null && activeUMLO.status == Status.Selected) {
-                    activeUMLO.UMLMenu.setVisible(false);
-                    activeUMLO.status = Status.Idle;
-                    activeUMLO.repaint();
-
-                }
-            }
-        }
-
-        public void mousePressed(MouseEvent e) {
-            SP = e.getPoint();
-            if (type == Status.Class) {
-                if (activeUMLO != null) {
-                    activeUMLO.status = Status.Idle;
-                    activeUMLO.UMLMenu.setVisible(false);
-                }
-                activeUMLO = new UMLObject(Page.this);
-                UML_counter++;
-                UMLObjectList.put(UML_counter, activeUMLO);
-                Page.this.add(activeUMLO);
-            }
-            repaint();
-        }
-
-        public void mouseDragged(MouseEvent e) {
-            if (type == Status.Class) {
-                EP = e.getPoint();
-                //計算長寬
-                width = Math.abs(EP.x - SP.x);
-                height = Math.abs(EP.y - SP.y);
-
-                //計算位置(象限)
-                Location = new Point(Math.min(SP.x, EP.x), Math.min(SP.y, EP.y));
-                activeUMLO.format(Location, width, height);
-                activeUMLO.updateUI();
-                activeUMLO.repaint();
-            }
-
-        }
-
-        public void mouseReleased(MouseEvent e) {
-            if (type == Status.Class) {
-                activeUMLO.status = Status.Selected;
-                activeUMLO.repaint();
-            }
-        }
-    }
     /*開新檔案*/
     public void NewPage() {
         /*清空 shapeList*/
         shapeList.clear();
-        UMLObjectList.clear();
         /*清空 freeList*/
         freeList.clear();
         /*清空畫面*/
         this.removeAll();
         image = null;
         shape_counter = 0;
-        UML_counter = 0;
         repaint();
     }
 

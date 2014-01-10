@@ -142,21 +142,24 @@ public class ToolBar extends JPanel implements ActionListener {
             colorbar.add(colorsBtn[i]);
             
             colorsBtn[i].addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                for (int i = 0; i < colors.length; i++) {
-                    if (ToolBar.this.parant.page.activeUMLO != null && e.getSource() == colorsBtn[i]) {
-                        ToolBar.this.parant.page.activeUMLO.setBackground(colors[i]);
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    for (int i = 0; i < colors.length; i++) {
+                        if (ToolBar.this.parant.page.drawobject != null && e.getSource() == colorsBtn[i]) {
+                            ToolBar.this.parant.page.drawobject.setBackground(colors[i]);
+                            ToolBar.this.parant.page.drawobject.color = colors[i];
+                        }
                     }
                 }
-            }
 
-            public void mouseExited(MouseEvent e) {
-                if (ToolBar.this.parant.page.activeUMLO != null) {
-                    ToolBar.this.parant.page.activeUMLO.setBackground(setcolorPanel[0].getBackground());
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    if (ToolBar.this.parant.page.drawobject != null) {
+                        ToolBar.this.parant.page.drawobject.setBackground(setcolorPanel[0].getBackground());
+                        ToolBar.this.parant.page.drawobject.color = setcolorPanel[0].getBackground();
+                    }
                 }
-            }
-
-        });
+            });
         }
 
         toolBar[4].add(colorbar);
@@ -184,7 +187,6 @@ public class ToolBar extends JPanel implements ActionListener {
             if (e.getSource() == pen_JTBtn[i]) {
                 parant.page.type = Status.valueOf(penBtnName[i][0]);
                 parant.page.status = Status.Draw;
-                System.out.println(parant.page.type);
                 break;
             }
         }
@@ -193,7 +195,6 @@ public class ToolBar extends JPanel implements ActionListener {
             if (e.getSource() == shape_JTBtn[i]) {
                 parant.page.type = Status.valueOf(shapeBtnName[i][0]);
                 parant.page.status = Status.Draw;
-                System.out.println(parant.page.type);
                 if (i == 5) {
                     String side = JOptionPane.showInputDialog("請輸入要幾個角?");
                     parant.page.star_arm = side != null ? Integer.parseInt(side) : 5;
@@ -203,7 +204,6 @@ public class ToolBar extends JPanel implements ActionListener {
                     parant.page.polygon_side = side != null ? Integer.parseInt(side) : 5;
                 }
                 break;
-                
             }
         }
         
@@ -212,13 +212,6 @@ public class ToolBar extends JPanel implements ActionListener {
                 if (colorJTBtn[0].isSelected()) {
                     setcolorPanel[0].setBackground(colors[i]);
                     parant.page.penColor = colors[i];
-                    if (parant.page.drawobject != null && parant.page.drawobject.status == Status.Selected) {
-                        if(parant.page.drawobject.isOpaque()) {
-                            parant.page.drawobject.setBackground(colors[i]);
-                        }
-                        parant.page.drawobject.color = colors[i];
-                        parant.page.repaint();
-                    }
                 } else if (colorJTBtn[1].isSelected()){
                     setcolorPanel[1].setBackground(colors[i]);
                     parant.page.eraserColor = colors[i];

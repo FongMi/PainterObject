@@ -1,9 +1,9 @@
 
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.*;
 import javax.swing.SwingUtilities;
+import javax.swing.border.*;
 import javax.swing.event.MouseInputListener;
 
 public class ResizeBorder extends AbstractBorder implements MouseInputListener {
@@ -11,6 +11,7 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
     Color borderColor;
     int rectWidth, rectHeight, nowCorner;
     DrawObject drawobject;
+    UMLMenu UMLMenu;
     Point[] corner;
     Point p = new Point(0, 0);
 
@@ -204,6 +205,9 @@ public class ResizeBorder extends AbstractBorder implements MouseInputListener {
                     break;
             }
             p = newP;
+            Component tmep = (Component) e.getSource();
+            ((DrawObject) tmep).updateUI();
+            tmep.repaint();
         }
     }
 
