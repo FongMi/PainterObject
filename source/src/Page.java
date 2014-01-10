@@ -48,6 +48,11 @@ public class Page extends JPanel {
     /*圖片暫存*/
     BufferedImage image;
     
+    /*紀錄ClassDiagram位置*/
+    Point SP,EP,Location ;
+    UMLObject activeUMLO;
+    
+    
     Page(MainWindow parant) {
         this.parant = parant;
         this.setBackground(Color.WHITE);
@@ -55,6 +60,8 @@ public class Page extends JPanel {
         this.addMouseListener(new myMouseAdapter());
         this.addMouseMotionListener(new myMouseAdapter());
         this.addKeyListener(new myKeyAdapter());
+        this.addMouseListener(new UMLPageListener());
+        this.addMouseMotionListener(new UMLPageListener());
         lineWidth = 2; //粗細預設=2
         shape_counter = 0; //計算圖形數量
         type = Status.Pen; //畫筆型態預設=Pen
@@ -373,6 +380,60 @@ public class Page extends JPanel {
         }
     }
 
+    
+    /*UML滑鼠監聽事件*/
+    
+    class UMLPageListener extends MouseAdapter {
+
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2) {
+                if (activeUMLO != null && activeUMLO.status == Status.Selected) 
+                {
+                    activeUMLO.UMLMenu.setVisible(false);
+                    activeUMLO.status = Status.Idle;
+                    activeUMLO.repaint();
+                    
+                }
+            }
+        }
+    
+
+        public void mousePressed(MouseEvent e) {
+            SP = e.getPoint();
+            if (type == Status.Class) {
+                if(activeUMLO != null){
+                    activeUMLO.status = Status.Idle;
+                    activeUMLO.UMLMenu.setVisible(false);
+                }
+                
+                activeUMLO = new UMLObject(Page.this);
+                Page.this.add(activeUMLO);  
+            }
+            repaint();
+        }
+
+        
+        public void mouseDragged(MouseEvent e) {
+            EP=e.getPoint();
+            //計算長寬
+            width = Math.abs(EP.x - SP.x);
+            height = Math.abs(EP.y - SP.y);
+            
+            //計算位置(象限)
+            Location = new Point(Math.min(SP.x, EP.x), Math.min(SP.y, EP.y));
+            activeUMLO.format(Location, width, height);
+            activeUMLO.updateUI();
+            activeUMLO.repaint();
+        }
+        
+        public void mouseReleased(MouseEvent e) {
+            activeUMLO.status = Status.Selected;
+            activeUMLO.repaint();
+
+        }
+        
+    
+    }
     /*開新檔案*/
     public void NewPage() {
         /*清空 shapeList*/

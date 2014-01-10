@@ -15,8 +15,9 @@ public class ToolBar extends JPanel implements ActionListener {
     JToggleButton[] pen_JTBtn;
     String penBtnName[][] = {{"Pen", "鉛筆，使用選取的線條寬度繪製任意形狀的線條"},
                              {"Eraser", "橡皮擦，清除圖片的的一部份，並以背景色彩取代"},
-                             {"Fill", "填入色彩，在畫布上的某個區域按一下，以色彩1填滿"}};
-    String penImage[] = {"img/pencil.png", "img/eraser.png", "img/fill.png"};
+                             {"Fill", "填入色彩，在畫布上的某個區域按一下，以色彩1填滿"},
+                             {"Class", "UML裡具有ClassDiagram的功能"}};
+    String penImage[] = {"img/pencil.png", "img/eraser.png", "img/fill.png","img/Class.png"};
     
     /*形狀按鈕*/
     JToggleButton[] shape_JTBtn;
@@ -46,7 +47,7 @@ public class ToolBar extends JPanel implements ActionListener {
                       new Color(0,162,232), new Color(63,72,204), new Color(163,73,164), new Color(127,127,127), new Color(195,195,195), new Color(185,122,87), new Color(255,174,201),
                       new Color(255,201,14), new Color(239,228,176), new Color(181,230,29), new Color(153,217,234), new Color(112,146,190), new Color(200,191,231)};
     
-    ToolBar(MainWindow parant) {
+    ToolBar(final MainWindow parant) {
         this.parant = parant;
         this.setLayout(new FlowLayout(FlowLayout.LEFT));
         
@@ -137,7 +138,25 @@ public class ToolBar extends JPanel implements ActionListener {
             colorsBtn[i].addActionListener(this);
             colorsBtn[i].add(selectColorPanel[i]);
             colorbar.add(colorsBtn[i]);
+            
+            colorsBtn[i].addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                for (int i = 0; i < colors.length; i++) {
+                    if (ToolBar.this.parant.page.activeUMLO != null && e.getSource() == colorsBtn[i]) {
+                        ToolBar.this.parant.page.activeUMLO.setBackground(colors[i]);
+                    }
+                }
+            }
+
+            public void mouseExited(MouseEvent e) {
+                if (ToolBar.this.parant.page.activeUMLO != null) {
+                    ToolBar.this.parant.page.activeUMLO.setBackground(setcolorPanel[0].getBackground());
+                }
+            }
+
+        });
         }
+
         toolBar[5].add(colorbar);
 
         /*ToolBar 版面設置*/

@@ -7,7 +7,8 @@ public class MainWindow extends JFrame {
     MenuBar menuBar;
     JTabbedPane tabbed;
     ToolBar toolBar;
-    ObjectToolBar objectToolBar;
+    
+    
     Page page;
     JLabel statusBar;
     
@@ -25,14 +26,14 @@ public class MainWindow extends JFrame {
         /*ToolBar*/
         toolBar = new ToolBar(this);
         /*ObjectToolBar*/
-        objectToolBar = new ObjectToolBar(this);
+        
         
         /*設定 Tabbed 透明*/
         UIManager.put("TabbedPane.contentOpaque", false);
         /*Tabbed*/
         tabbed = new JTabbedPane();
         tabbed.add("小畫家", toolBar);
-        tabbed.add("物件", objectToolBar);
+        
 
         /*MenuBar*/
         menuBar = new MenuBar(this);
